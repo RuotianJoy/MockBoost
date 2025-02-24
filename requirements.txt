@@ -4,7 +4,7 @@ datasets
 tqdm
 numpy
 sentencepiece
-accelerators
+accelerate
 wandb
 protobuf
 scikit-learn

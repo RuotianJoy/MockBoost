@@ -4,15 +4,15 @@ import torch
 import pandas as pd
 
 # 加载本地CSV数据集
-df = pd.read_csv('/Users/ruotianjoy/PycharmProjects/MockBoost/Training/data/interview_questions.csv')  # 请确保CSV文件包含'question'和'answer'列
+df = pd.read_csv('E:\\Project\\MockBoost\\Training\\data\\interview_questions.csv')  # 请确保CSV文件包含'question'和'answer'列
 # 确保question和answer列的数据类型为字符串
 df['question'] = df['question'].astype(str)
 df['answer'] = df['answer'].astype(str)
 ds = Dataset.from_pandas(df)
 
 # 加载tokenizer和模型
-tokenizer = AutoTokenizer.from_pretrained("/Users/ruotianjoy/PycharmProjects/MockBoost/Training/Llama-3.2-1B")
-model = AutoModelForCausalLM.from_pretrained("/Users/ruotianjoy/PycharmProjects/MockBoost/Training/Llama-3.2-1B")
+tokenizer = AutoTokenizer.from_pretrained("E:\\Project\\MockBoost\\Training\\Llama-3.2-1B")
+model = AutoModelForCausalLM.from_pretrained("E:\\Project\\MockBoost\\Training\\Llama-3.2-1B")
 
 # 设置padding token
 tokenizer.pad_token = tokenizer.eos_token
