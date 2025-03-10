@@ -3,6 +3,12 @@ import redis
 import uuid
 import json
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
+from db.controller.UserServerController import UserServerController
+from TTSandASR.ChatTTs import ChatTTS
+# 全局变量，用于存储已初始化的模型、分词器和Redis客户端
+_redis_client = None
+_tokenizer = None
+_model = None
 
 def initialize_chatbot(redis_host, redis_port, redis_password, model_path):
     """
@@ -33,7 +39,7 @@ def initialize_chatbot(redis_host, redis_port, redis_password, model_path):
 
     return redis_client, tokenizer, model
 
-def chat_with_model(user_input, conversation_id=None, redis_client=None, tokenizer=None, model=None):
+def chat_with_model(user_input, conversation_id=None, redis_client=None, tokenizer=None, model=None, username=None, mode=None):
     """
     与模型进行对话，并返回模型的回复和对话 ID。
 
@@ -43,6 +49,7 @@ def chat_with_model(user_input, conversation_id=None, redis_client=None, tokeniz
         redis_client (redis.Redis, optional): Redis 客户端. Defaults to None.
         tokenizer (AutoTokenizer, optional): 分词器. Defaults to None.
         model (AutoModelForCausalLM, optional): 模型. Defaults to None.
+        username (str, optional): 用户名. Defaults to None.
 
     Returns:
         tuple: (model_response, conversation_id)
@@ -50,6 +57,20 @@ def chat_with_model(user_input, conversation_id=None, redis_client=None, tokeniz
     # 如果 conversation_id 不存在，生成一个新的
     if conversation_id is None:
         conversation_id = str(uuid.uuid4())  # 生成唯一 ID
+        # 从数据库加载历史对话ID
+        con = UserServerController()
+        userinfo = {
+            'username': username,
+        }
+        uid = con.getUid(userinfo)
+        print(uid)
+        Uid = uid[0][6]
+        info = {
+            'UUID': Uid,
+            'KIND': mode,
+            'DIAKEY': conversation_id,
+        }
+        con.addUid(info)
         print(f"New conversation started. Conversation ID: {conversation_id}")
 
     # 从 Redis 中获取对话历史
@@ -57,9 +78,14 @@ def chat_with_model(user_input, conversation_id=None, redis_client=None, tokeniz
     if history:
         messages = json.loads(history)  # 反序列化为列表
     else:
+        # 如果有用户名，在系统提示中包含用户名
+        system_content = "You are an interviewer who use english and performs the duties of an interviewer according to different professional fields and the user's intended position, interviews users."
+        if username:
+            system_content += f" The interviewee's name is {username}."
+        
         messages = [
             {"role": "system",
-             "content": "You are an interviewer who performs the duties of an interviewer according to different professional fields and the user's intended position, interviews users."},
+             "content": system_content},
         ]
 
     # 添加用户输入到对话历史
@@ -101,15 +127,25 @@ def run_chatbot(redis_host, redis_port, redis_password, model_path, user_input):
             print("Exiting chat...")
             break
         response, conversation_id = chat_with_model(user_input, conversation_id, redis_client, tokenizer, model)
+
         print(f"AI: {response}")
         return response, conversation_id
 
 # 示例调用
-def start_interview_ds(user_input):
+def start_interview_ds(user_input, conversation_id=None, username=None, mode = None):
+    global _redis_client, _tokenizer, _model
+    
     REDIS_HOST = "r-bp162llfgqnxpesejnpd.redis.rds.aliyuncs.com"  # 阿里云 Redis 地址
     REDIS_PORT = 6379               # Redis 端口
     REDIS_PASSWORD = "Liao031221"  # Redis 密码
     MODEL_PATH = "D:\\Project\\MockBoost\\Training\\Deepseek"  # 模型路径
-
-    response, conversation_id = run_chatbot(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, MODEL_PATH, user_input)
+    
+    # 如果模型尚未初始化，则进行初始化
+    if _redis_client is None or _tokenizer is None or _model is None:
+        print("初始化模型中...")
+        _redis_client, _tokenizer, _model = initialize_chatbot(REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, MODEL_PATH)
+        print("模型初始化完成")
+    
+    # 直接使用已初始化的模型进行对话
+    response, conversation_id = chat_with_model(user_input, conversation_id, _redis_client, _tokenizer, _model, username, mode)
     return response, conversation_id
