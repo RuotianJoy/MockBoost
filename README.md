@@ -43,8 +43,8 @@ MockBoost/
 ├── Frame/            # 用户界面相关代码
 ├── Main/             # 核心业务逻辑和模型交互
 ├── TTSandASR/        # 语音合成和识别相关代码
-├── config/           # 配置文件
 ├── db/               # 数据库相关代码
+├── Training/         # 模型训练
 └── requirements.txt  # 项目依赖
 ```
 
@@ -118,11 +118,6 @@ python -m Frame.main_frame
 ### 扩展模型支持
 
 如需添加新的语言模型支持，请参考`Main/DeepSeek.py`和`Main/Thread/DataThread`的实现方式。
-
-
-## 许可证
-
-本项目采用MIT许可证 - 详情请参见[LICENSE](LICENSE)文件
 
 ## 联系方式
 
