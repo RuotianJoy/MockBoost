@@ -111,13 +111,17 @@ python -m Frame.main_frame
 
 ## 扩展开发
 
-### 添加新的面试职位
+### 集成语音转文本对话功能
 
-可以通过修改`Frame/main_window.py`中的`mode_combo`组件来添加新的面试职位选项。
+可以通过集成语音转文本对话功能做到更加真实的面试。
 
 ### 扩展模型支持
 
 如需添加新的语言模型支持，请参考`Main/DeepSeek.py`和`Main/Thread/DataThread`的实现方式。
+
+### 数字人支持
+
+添加数字人使得模拟更加真实。
 
 ## 联系方式
 
