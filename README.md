@@ -6,17 +6,33 @@ MockBoost是一个智能模拟面试系统，旨在帮助求职者提升面试�
 
 ## 主要功能
 
-- **多职位面试模拟**：支持Java开发、Python开发、前端开发、算法工程师等多种职位的面试模拟
+- **多职位面试模拟**：支持多种职位的面试模拟
 - **智能对话系统**：基于大型语言模型的智能对话，提供真实的面试体验
 - **语音交互**：集成TTS（文本转语音）功能，支持语音输出，增强交互体验
 - **对话记忆**：使用Redis数据库存储和检索对话历史，实现上下文感知的交互
 - **用户管理**：支持用户注册、登录和个人信息管理
 - **面试评估**：提供面试表现的评估和反馈
 
+## 项目展示
+1. 登陆界面
+
+![登陆界面](./ProjectImages/Login.png)
+2. 运行界面
+
+![运行界面](./ProjectImages/Conversation.png)
+3. 个人信息
+
+![个人信息](./ProjectImages/PersonalInfo.png)
+4. 对话历史
+
+![对话历史](./ProjectImages/History.png)
+
+
+
 ## 技术架构
 
 - **前端界面**：基于PyQt6构建的桌面应用界面
-- **对话模型**：集成DeepSeek大型语言模型
+- **对话模型**：集成DeepSeek-7B大型语言模型
 - **记忆存储**：使用Redis向量数据库存储对话记忆
 - **语音合成**：使用Coqui TTS进行文本到语音的转换
 
@@ -38,6 +54,7 @@ MockBoost/
 
 - Python 3.11
 - 支持的操作系统：Windows、macOS、Linux
+- N卡限定
 
 ### 安装步骤
 
@@ -63,10 +80,10 @@ python -m Frame.main_frame
 ```
 
 2. 登录系统
-   - 使用已有账号登录或注册新账号
+   - 使用已有账号登录或注册(未实现)新账号
 
 3. 选择面试模式
-   - 从下拉菜单中选择面试职位（Java开发、Python开发等）
+   - 从下拉菜单中选择或输入面试职位（Java开发、Python开发等）
    - 点击"开始面试"按钮开始模拟面试
 
 4. 进行面试对话
@@ -82,7 +99,7 @@ python -m Frame.main_frame
 
 ### 对话记忆管理
 
-系统使用Milvus向量数据库存储和检索对话历史，实现上下文感知的交互。核心实现在`Main/main.py`中的`ChatMemoryManager`类。
+系统使用Redis数据库存储和检索对话历史，实现上下文感知的交互。核心实现在`Main/DeepSeek.py`中。
 
 ### 语音合成
 
@@ -100,17 +117,8 @@ python -m Frame.main_frame
 
 ### 扩展模型支持
 
-如需添加新的语言模型支持，请参考`Main/DeepSeek.py`的实现方式。
+如需添加新的语言模型支持，请参考`Main/DeepSeek.py`和`Main/Thread/DataThread`的实现方式。
 
-## 贡献指南
-
-欢迎贡献代码、报告问题或提出新功能建议。请遵循以下步骤：
-
-1. Fork本仓库
-2. 创建您的特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交您的更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 开启一个Pull Request
 
 ## 许可证
 
@@ -120,5 +128,5 @@ python -m Frame.main_frame
 
 如有任何问题或建议，请通过以下方式联系我们：
 
-- 项目维护者：[LiaoJiongyi](mailto:your.email@example.com)
+- 项目维护者：[LiaoJiongyi](2750768449@qq.com)
 - 项目仓库：[GitHub](https://github.com/ruotianwuf/MockBoost)
