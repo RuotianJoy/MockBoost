@@ -18,7 +18,7 @@ class ChatTTS:
 
         print("Audio played.")
 
-# Example usage:
+# # Example usage:
 # tts = ChatTTS()
 # tts.play_text("Hello, this is a test of the Coqui TTS system. I hope you're feeling happy today!")
 
