@@ -1,10 +1,13 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, \
     QTextEdit, QFrame, QComboBox, QLineEdit
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 import sys
 from TTSandASR.ChatTTs import ChatTTS
-from Main.Thread.ModelThread import ModelThread
+from Main.ModelThread import ModelThread
 from Frame.user_profile import UserProfileDialog
+
+from wandb import login
+from Main.DeepSeek import start_interview_ds
 
 
 class TTSThread(QThread):
