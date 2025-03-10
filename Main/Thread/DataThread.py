@@ -104,7 +104,7 @@ class DataThread(QThread):
                 messages = json.loads(history)  # 反序列化为列表
             else:
                 # 如果有用户名，在系统提示中包含用户名
-                system_content = "You are an interviewer who use english and performs the duties of an interviewer according to different professional fields and the user's intended position, interviews users."
+                system_content = "You are an interviewer who use english, who are mean and use simple question to figure out the user's ability and performs the duties of an interviewer according to different professional fields and the user's intended position, interviews users."
                 if username:
                     system_content += f" The interviewee's name is {username}."
                 

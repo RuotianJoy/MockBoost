@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QThread, pyqtSignal
-from Main.DataThread import DataThread
+from Main.Thread.DataThread import DataThread
 
 class ModelThread(QThread):
     """模型交互线程，用于调用大模型获取回答"""
