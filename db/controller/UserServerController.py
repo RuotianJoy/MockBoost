@@ -248,6 +248,22 @@ class UserServerController:
             result = True
         return result
 
+    def find_dialog_info(self,data):
+        model = CommonDb('Dialog')
+        consequence = model.selectAll(f"UUID='{data['Uid']}'")
+        if not consequence:
+            result = False
+            print('无此项')
+        else:
+            result = True
+        return consequence
+
+    def getUid(self,data):
+        model = CommonDb('user')
+        consequence = model.selectAll(f"Name='{data['username']}'")
+        return consequence
+
+
     def adduser_user_ServerStatus(self, status_data):
         model = CommonDb('user')
         consequence = model.selectAll(
@@ -336,4 +352,9 @@ class UserServerController:
     def add_chatman(self, data):
         model = CommonDb('chatperson')
         consequence = model.add_chatman(data)
+        return consequence
+
+    def addUid(self, info):
+        model = CommonDb('Dialog')
+        consequence = model.add_Dialog(info)
         return consequence
