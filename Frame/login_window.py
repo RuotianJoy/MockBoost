@@ -16,28 +16,28 @@ class LoginWindow(QWidget):
         layout.setContentsMargins(40, 40, 40, 40)
         
         # 添加标题
-        title = QLabel('MockBoost 模拟面试系统')
+        title = QLabel('MockBoost')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet('font-size: 20px; font-weight: bold; margin-bottom: 20px;')
         layout.addWidget(title)
         
         # 用户名输入框
         self.username_input = QLineEdit()
-        self.username_input.setPlaceholderText('请输入用户名')
+        self.username_input.setPlaceholderText('Please enter a username')
         self.username_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.username_input)
 
         
         # 密码输入框
         self.password_input = QLineEdit()
-        self.password_input.setPlaceholderText('请输入密码')
+        self.password_input.setPlaceholderText('Please enter your password')
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.password_input)
 
         
         # 登录按钮
-        login_button = QPushButton('登录')
+        login_button = QPushButton('Login')
         login_button.setStyleSheet(
             'QPushButton {'
             '   background-color: #4CAF50;'
