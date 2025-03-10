@@ -2,6 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/TTSandASR/fish-speech" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Live2D-Python" vcs="Git" />
   </component>
 </project>
