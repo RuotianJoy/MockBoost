@@ -277,3 +277,20 @@ class CommonDb(BaseModel):
         print(sql)
         return self.db.add(sql)
 
+    def add_Dialog(self, info,noUpdate=False):
+        sInsertField = ""
+        sInsertValue = ""
+
+        sUpdateSql = ""
+        for key in info.keys():
+            sInsertField += "," + key
+            sInsertValue += ",\"" + str(info[key]) + "\""
+            sUpdateSql += key + "=\"" + str(info[key]) + "\","
+        if noUpdate:
+            sql = "insert into " + self.table + "(" + sInsertField[1:] + ") values(" + sInsertValue[1:] + ") ON DUPLICATE KEY UPDATE " + sUpdateSql[
+                                                                                                                            :-1] + ";"
+        else:
+            sql = "insert into " + self.table + "(" + sInsertField[1:] + ") values(" + sInsertValue[1:] + ");"
+        print(sql)
+        return self.db.add(sql)
+
