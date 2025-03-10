@@ -1,11 +1,28 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, \
     QTextEdit, QFrame, QComboBox, QLineEdit
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 import sys
 from TTSandASR.ChatTTs import ChatTTS
+from Main.ModelThread import ModelThread
+from Frame.user_profile import UserProfileDialog
 
 from wandb import login
 from Main.DeepSeek import start_interview_ds
+
+
+class TTSThread(QThread):
+    """TTS语音合成线程"""
+    finished = pyqtSignal()  # 完成信号
+    
+    def __init__(self, text):
+        super().__init__()
+        self.text = text
+        self.tts = ChatTTS()
+        
+    def run(self):
+        # 在线程中执行TTS语音合成和播放
+        self.tts.play_text(self.text)
+        self.finished.emit()  # 发送完成信号
 
 
 class MainWindow(QMainWindow):
@@ -14,6 +31,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('MockBoost 模拟面试系统')
         self.setMinimumSize(1000, 700)
         self.username = username
+        self.conversation_id = None  # 添加conversation_id属性用于保存对话ID
         # 创建主窗口部件
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
@@ -73,6 +91,23 @@ class MainWindow(QMainWindow):
         left_layout.addWidget(start_button)
         left_layout.addWidget(end_button)
         left_layout.addStretch()
+        
+        # 用户图标按钮
+        user_button = QPushButton('👤 个人信息')
+        user_button.setStyleSheet(
+            'QPushButton {'
+            '    background-color: #2196F3;'
+            '    color: white;'
+            '    padding: 10px;'
+            '    border: none;'
+            '    border-radius: 4px;'
+            '    font-size: 14px;'
+            '}'
+            'QPushButton:hover {'
+            '    background-color: #0b7dda;'
+            '}'
+        )
+        left_layout.addWidget(user_button)
 
         # 右侧对话区域
         right_panel = QFrame()
@@ -87,7 +122,7 @@ class MainWindow(QMainWindow):
         self.chat_history.setStyleSheet('font-size: 14px;')
 
         # 语音状态显示
-        self.status_label = QLabel('准备就绪')
+        self.status_label = QLabel('初始化中...')
         self.status_label.setStyleSheet('color: #666; font-size: 14px;')
 
         # 输入框
@@ -108,20 +143,90 @@ class MainWindow(QMainWindow):
         # 连接信号
         start_button.clicked.connect(self.start_interview)
         end_button.clicked.connect(self.end_interview)
+        self.input_field.returnPressed.connect(self.handle_input)  # 监听回车按键事件
+        user_button.clicked.connect(self.show_user_profile)  # 连接用户图标按钮点击事件
 
     def start_interview(self):
         """开始模拟面试"""
         mode = self.mode_combo.currentText()
 
-        self.chat_history.append(f'欢迎您，{self.username} 正在进行{mode}模拟面试...\n')
+        self.chat_history.append(f'欢迎您，{self.username}, 正在进行{mode}模拟面试...\n')
+        self.status_label.setText('系统: 正在初始化面试...')
+        
+        # 创建并启动模型交互线程
+        initial_prompt = f"Hello, I'm {self.username} and I'm looking to interview for a career in {mode}"
+        self.model_thread = ModelThread(initial_prompt, None, self.username, mode)
+        self.model_thread.response_ready.connect(self.on_interview_start)
+        self.model_thread.error_occurred.connect(self.on_model_error)  # 连接错误信号
+        self.model_thread.start()
+        
+    def handle_input(self):
+        """处理用户输入并获取回应"""
+        user_input = self.input_field.text()
+        if user_input:
+            # 立即显示用户输入到界面上
+            self.chat_history.append(f'\n{self.username}: {user_input}\n')
+            self.input_field.clear()
 
-        # TODO: 在这里添加实际的面试逻辑
-        response, chatid = start_interview_ds(
-            f"Hello, I'm {self.username} and I'm looking to interview for a career in {mode}")
+            # 更新状态提示用户系统正在处理
+            self.status_label.setText('系统: 正在思考中...')
+
+            # 确保UI更新
+            QApplication.processEvents()
+            
+            # 检查并等待之前的模型线程完成
+            if hasattr(self, 'model_thread') and self.model_thread.isRunning():
+                try:
+                    # 尝试断开之前的信号连接
+                    self.model_thread.response_ready.disconnect()
+                    self.model_thread.error_occurred.disconnect()  # 断开错误信号连接
+                except TypeError:
+                    # 如果信号未连接，会抛出TypeError
+                    pass
+                # 等待线程完成
+                self.model_thread.wait()
+
+            # 创建并启动新的模型交互线程
+            self.model_thread = ModelThread(user_input, self.conversation_id, self.username)
+            self.model_thread.response_ready.connect(self.on_model_response)
+            self.model_thread.error_occurred.connect(self.on_model_error)  # 连接错误信号
+            self.model_thread.start()
+            
+    def on_interview_start(self, response, conversation_id):
+        """面试开始后的回调"""
+        # 更新对话ID
+        self.conversation_id = conversation_id
         self.chat_history.append(f'SYS:  {response}')
-        tts = ChatTTS()
-        tts.play_text(response)
-        self.status_label.setText(f'\n系统: 开始{mode}模拟面试, 对话ID：{chatid}\n')
+        self.status_label.setText(f'\n系统: 开始模拟面试, 对话ID：{self.conversation_id}\n')
+        
+        # 检查并停止之前的TTS线程
+        if hasattr(self, 'tts_thread') and self.tts_thread.isRunning():
+            # 断开之前的TTS线程信号连接
+            try:
+                self.tts_thread.finished.disconnect()
+            except TypeError:
+                # 如果信号未连接，会抛出TypeError
+                pass
+            self.tts_thread.wait()
+        
+        # 创建并启动TTS线程
+        self.tts_thread = TTSThread(response)
+        self.tts_thread.finished.connect(self.on_tts_finished)
+        self.tts_thread.start()
+        
+        self.status_label.setText(f'系统: 正在语音播放中...')
+        
+        # 安全地断开信号连接，避免多次连接同一信号
+        try:
+            if hasattr(self, 'model_thread'):
+                self.model_thread.response_ready.disconnect(self.on_interview_start)
+        except TypeError:
+            # 如果信号未连接，会抛出TypeError
+            pass
+            
+        # 等待线程完成
+        if hasattr(self, 'model_thread') and self.model_thread.isRunning():
+            self.model_thread.wait()
 
     def end_interview(self):
         """结束模拟面试"""
@@ -129,6 +234,73 @@ class MainWindow(QMainWindow):
         self.chat_history.append('\n系统: 面试结束\n')
         # TODO: 在这里添加面试结束的处理逻辑
 
+    def on_model_response(self, response, conversation_id):
+        """模型回应准备好后的回调"""
+        # 更新对话ID
+        self.conversation_id = conversation_id
+        
+        # 检查并停止之前的TTS线程
+        if hasattr(self, 'tts_thread') and self.tts_thread.isRunning():
+            # 断开之前的TTS线程信号连接
+            try:
+                self.tts_thread.finished.disconnect()
+            except TypeError:
+                # 如果信号未连接，会抛出TypeError
+                pass
+            self.tts_thread.wait()
+        
+        # 直接显示完整的系统回应
+        self.chat_history.append(f'\nSYS:  {response}\n')
+        
+        # 创建并启动TTS线程
+        self.tts_thread = TTSThread(response)
+        self.tts_thread.finished.connect(self.on_tts_finished)
+        self.tts_thread.start()
+        
+        self.status_label.setText(f'系统: 正在语音播放中...')
+        
+        # 安全地断开模型线程的信号连接
+        try:
+            if hasattr(self, 'model_thread'):
+                self.model_thread.response_ready.disconnect(self.on_model_response)
+        except TypeError:
+            # 如果信号未连接，会抛出TypeError
+            pass
+            
+        # 等待模型线程完成
+        if hasattr(self, 'model_thread') and self.model_thread.isRunning():
+            self.model_thread.wait()
+            
+    def on_tts_finished(self):
+        """TTS播放完成后的回调"""
+        self.status_label.setText(f'系统: 当前对话ID：{self.conversation_id}')
+        
+        # 安全地断开TTS线程的信号连接
+        try:
+            if hasattr(self, 'tts_thread'):
+                self.tts_thread.finished.disconnect(self.on_tts_finished)
+        except TypeError:
+            # 如果信号未连接，会抛出TypeError
+            pass
+            
+        # 等待TTS线程完成
+        if hasattr(self, 'tts_thread') and self.tts_thread.isRunning():
+            self.tts_thread.wait()
+    
+    def on_model_error(self, error_msg):
+        """处理模型线程错误"""
+        # 在界面上显示错误信息
+        self.chat_history.append(f'\n系统错误: {error_msg}\n')
+        self.status_label.setText('系统: 发生错误，请重试')
+        
+        # 确保UI更新
+        QApplication.processEvents()
+
+    def show_user_profile(self):
+        """显示用户个人信息页面"""
+        # 创建并显示用户信息对话框
+        profile_dialog = UserProfileDialog(self.username, self)
+        profile_dialog.exec()
 
 def main():
     app = QApplication(sys.argv)
