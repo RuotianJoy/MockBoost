@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHB
 from PyQt6.QtCore import QThread, pyqtSignal
 import sys
 from TTSandASR.ChatTTs import ChatTTS
+from TTSandASR.Vosk import recognize_speech_once
 from Main.Thread.ModelThread import ModelThread
 from Main.Thread.EndInterviewThread import EndInterviewThread
 from Frame.user_profile import UserProfileDialog
@@ -21,6 +22,29 @@ class TTSThread(QThread):
         # 在线程中执行TTS语音合成和播放
         self.tts.play_text(self.text)
         self.finished.emit()  # 发送完成信号
+
+
+class ASRThread(QThread):
+    """语音识别线程"""
+    result_ready = pyqtSignal(str)  # 识别结果信号
+    partial_result_ready = pyqtSignal(str)  # 部分识别结果信号
+    
+    def __init__(self, model_path="D:\\Project\\MockBoost\\TTSandASR\\Model", sample_rate=8000, max_duration=50000):
+        super().__init__()
+        self.model_path = model_path
+        self.sample_rate = sample_rate
+        self.max_duration = max_duration
+        
+    def run(self):
+        # 在线程中执行语音识别，添加回调函数实现实时反馈
+        def result_callback(text, is_final=True):
+            if is_final:
+                self.result_ready.emit(text)  # 发送最终识别结果信号
+            else:
+                self.partial_result_ready.emit(text)  # 发送部分识别结果信号
+                
+        # 使用回调函数执行语音识别
+        recognize_speech_once(self.model_path, self.sample_rate, self.max_duration, callback=result_callback)
 
 
 class MainWindow(QMainWindow):
@@ -123,16 +147,41 @@ class MainWindow(QMainWindow):
         self.status_label = QLabel('Initialization...')
         self.status_label.setStyleSheet('color: #666; font-size: 14px;')
 
+        # 输入框和语音按钮的水平布局
+        input_layout = QHBoxLayout()
+        
         # 输入框
         self.input_field = QLineEdit(self)  # 新增输入框
         self.input_field.setPlaceholderText("Please enter your response...")
         self.input_field.setStyleSheet('padding: 10px; font-size: 14px;')
+        
+        # 语音识别按钮
+        self.voice_button = QPushButton('🎤')
+        self.voice_button.setToolTip('语音输入')
+        self.voice_button.setStyleSheet(
+            'QPushButton {'
+            '    background-color: #FF9800;'
+            '    color: white;'
+            '    padding: 10px;'
+            '    border: none;'
+            '    border-radius: 4px;'
+            '    font-size: 14px;'
+            '    min-width: 40px;'
+            '}'
+            'QPushButton:hover {'
+            '    background-color: #F57C00;'
+            '}'
+        )
+        
+        # 添加到输入布局
+        input_layout.addWidget(self.input_field, 9)  # 输入框占据大部分空间
+        input_layout.addWidget(self.voice_button, 1)  # 语音按钮占据较小空间
 
         # 添加到右侧布局
         right_layout.addWidget(chat_label)
         right_layout.addWidget(self.chat_history)
         right_layout.addWidget(self.status_label)
-        right_layout.addWidget(self.input_field)  # 添加输入框
+        right_layout.addLayout(input_layout)  # 添加输入布局
 
         # 添加到主布局
         main_layout.addWidget(left_panel, 1)
@@ -143,12 +192,13 @@ class MainWindow(QMainWindow):
         end_button.clicked.connect(self.end_interview)
         self.input_field.returnPressed.connect(self.handle_input)  # 监听回车按键事件
         user_button.clicked.connect(self.show_user_profile)  # 连接用户图标按钮点击事件
+        self.voice_button.clicked.connect(self.start_voice_recognition)  # 连接语音识别按钮点击事件
 
     def start_interview(self):
         """开始模拟面试"""
         mode = self.mode_combo.currentText()
 
-        self.chat_history.append(f'Welcome，{self.username}, Conducting a {mode} mock interview...\n')
+        self.chat_history.append(f'Welcome, {self.username}! Conducting a {mode} mock interview...\n')
         self.status_label.setText('System: Interview is being initialized...')
         
         # 创建并启动模型交互线程
@@ -368,6 +418,51 @@ class MainWindow(QMainWindow):
         # 创建并显示用户信息对话框
         profile_dialog = UserProfileDialog(self.username, self)
         profile_dialog.exec()
+        
+    def start_voice_recognition(self):
+        """启动语音识别"""
+        # 更新状态提示用户系统正在进行语音识别
+        self.status_label.setText('System: 正在进行语音识别，请说话...')
+        self.voice_button.setEnabled(False)  # 禁用语音按钮，防止重复点击
+        
+        # 确保UI更新
+        QApplication.processEvents()
+        
+        # 检查并等待之前的语音识别线程完成
+        if hasattr(self, 'asr_thread') and self.asr_thread.isRunning():
+            try:
+                # 尝试断开之前的信号连接
+                self.asr_thread.result_ready.disconnect()
+                self.asr_thread.partial_result_ready.disconnect()
+            except TypeError:
+                # 如果信号未连接，会抛出TypeError
+                pass
+            # 等待线程完成
+            self.asr_thread.wait()
+        
+        # 创建并启动新的语音识别线程
+        self.asr_thread = ASRThread()
+        self.asr_thread.result_ready.connect(self.on_speech_recognized)
+        self.asr_thread.partial_result_ready.connect(self.on_partial_speech_recognized)
+        self.asr_thread.start()
+    
+    def on_speech_recognized(self, result):
+        """语音识别完成后的回调"""
+        # 将识别结果填入输入框
+        self.input_field.setText(result)
+        self.status_label.setText('System: 语音识别完成')
+        self.voice_button.setEnabled(True)  # 重新启用语音按钮
+        
+        # 确保UI更新
+        QApplication.processEvents()
+    
+    def on_partial_speech_recognized(self, partial_result):
+        """部分语音识别结果的回调"""
+        # 将部分识别结果实时显示在输入框中
+        self.input_field.setText(partial_result)
+        
+        # 确保UI更新
+        QApplication.processEvents()
 
 def main():
     app = QApplication(sys.argv)
