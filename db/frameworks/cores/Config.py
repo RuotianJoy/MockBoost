@@ -10,8 +10,11 @@ class Config:
         sys_platform = platform.platform().lower()
         print(sys_platform)
 
-        cfgpath = "D:\\Project\\MockBoost\\db\\configs\\machine.ini"
+        cfgpath = os.path.abspath("../db/configs/machine.ini")
 
+        print("Config path: ", cfgpath)
+
+        config = configparser.ConfigParser()
 
         # 创建管理对象
         self.conf = configparser.ConfigParser()
