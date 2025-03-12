@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QObject, pyqtSignal
 import sys
-from Frame.login_window import LoginWindow
-from Frame.main_window import MainWindow
+from login_window import LoginWindow
+from main_window import MainWindow
 
 class AppController(QObject):
     """

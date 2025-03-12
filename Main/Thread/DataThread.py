@@ -5,6 +5,7 @@ import torch
 import redis
 import uuid
 import json
+import traceback
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 from db.controller.UserServerController import UserServerController
 
@@ -29,7 +30,7 @@ class DataThread(QThread):
         self.REDIS_HOST = "r-bp162llfgqnxpesejnpd.redis.rds.aliyuncs.com"  # 阿里云 Redis 地址
         self.REDIS_PORT = 6379               # Redis 端口
         self.REDIS_PASSWORD = "Liao031221"  # Redis 密码
-        self.MODEL_PATH = os.path.abspath("../Training/Deepseek")
+        self.MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Training", "Deepseek")
 
   # 模型路径
         
@@ -54,6 +55,7 @@ class DataThread(QThread):
             # 捕获所有异常，发送错误信号
             error_msg = f"数据处理错误: {str(e)}"
             print(error_msg)
+            traceback.print_exc()  # 打印详细的堆栈跟踪
             self.error_occurred.emit(error_msg)
     
     def initialize_chatbot(self, redis_host, redis_port, redis_password, model_path):
@@ -78,6 +80,7 @@ class DataThread(QThread):
             # 捕获初始化过程中的异常
             error_msg = f"初始化错误: {str(e)}"
             print(error_msg)
+            traceback.print_exc()  # 打印详细的堆栈跟踪
             self.error_occurred.emit(error_msg)
             raise  # 重新抛出异常，以便在run方法中捕获
     
@@ -87,20 +90,27 @@ class DataThread(QThread):
             # 如果 conversation_id 不存在，生成一个新的
             if conversation_id is None:
                 conversation_id = str(uuid.uuid4())  # 生成唯一 ID
-                con = UserServerController()
-                userinfo = {
-                    'username': username,
-                }
-                uid = con.getUid(userinfo)
-                print(uid)
-                Uid = uid[0][6]
-                info = {
-                    'UUID': Uid,
-                    'KIND': mode,
-                    'DIAKEY': conversation_id,
-                }
-                con.addUid(info)
-                print(f"New conversation started. Conversation ID: {conversation_id}")
+                try:
+                    con = UserServerController()
+                    userinfo = {
+                        'username': username,
+                    }
+                    uid = con.getUid(userinfo)
+                    print(uid)
+                    if uid and len(uid) > 0 and len(uid[0]) > 6:
+                        Uid = uid[0][6]
+                        info = {
+                            'UUID': Uid,
+                            'KIND': mode,
+                            'DIAKEY': conversation_id,
+                        }
+                        con.addUid(info)
+                        print(f"New conversation started. Conversation ID: {conversation_id}")
+                    else:
+                        print(f"无法获取用户ID，但会继续对话。Conversation ID: {conversation_id}")
+                except Exception as db_error:
+                    print(f"数据库操作失败，但会继续对话: {str(db_error)}")
+                    traceback.print_exc()
 
             # 从 Redis 中获取对话历史
             history = redis_client.get(conversation_id)
@@ -138,5 +148,7 @@ class DataThread(QThread):
             # 捕获对话过程中的异常
             error_msg = f"对话错误: {str(e)}"
             print(error_msg)
+            traceback.print_exc()  # 打印详细的堆栈跟踪
             self.error_occurred.emit(error_msg)
-            raise  # 重新抛出异常，以便在run方法中捕获
+            # 返回错误信息和对话ID，确保UI能够显示错误
+            return f"对话过程中出错: {str(e)}", conversation_id

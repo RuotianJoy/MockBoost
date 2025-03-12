@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal
+import traceback
 from db.controller.UserServerController import UserServerController
-from Frame.register_window import RegisterWindow
+from register_window import RegisterWindow
 
 class LoginWindow(QWidget):
     switch_to_register = pyqtSignal()  # 切换到注册窗口信号
@@ -91,16 +92,23 @@ class LoginWindow(QWidget):
         print(username, password)
 
         if username and password:  # 简单的非空验证
-
-            data = {
-                'username': username,
-                'password': password,
-            }
-            con = UserServerController()
-            res = con.findlogin_user_ServerStatus(data)
-            print(res)
-            if res:
-                self.open_main_window()
+            try:
+                data = {
+                    'username': username,
+                    'password': password,
+                }
+                con = UserServerController()
+                res = con.findlogin_user_ServerStatus(data)
+                print(res)
+                if res:
+                    self.open_main_window()
+                else:
+                    QMessageBox.warning(self, '登录失败', '用户名或密码错误')
+            except Exception as e:
+                error_msg = f"登录过程中出错: {str(e)}"
+                print(error_msg)
+                traceback.print_exc()  # 打印详细的堆栈跟踪
+                QMessageBox.critical(self, '连接错误', f"无法连接到数据库服务器，请检查网络连接。\n详细信息: {str(e)}")
         else:
             QMessageBox.warning(self, '登录失败', '请输入用户名和密码')
     

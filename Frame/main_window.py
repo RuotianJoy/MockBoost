@@ -8,7 +8,7 @@ from TTSandASR.ChatTTs import ChatTTS
 from TTSandASR.Vosk import recognize_speech_once
 from Main.Thread.ModelThread import ModelThread
 from Main.Thread.EndInterviewThread import EndInterviewThread
-from Frame.user_profile import UserProfileDialog
+from user_profile import UserProfileDialog
 
 
 class TTSThread(QThread):
@@ -31,9 +31,10 @@ class ASRThread(QThread):
     result_ready = pyqtSignal(str)  # 识别结果信号
     partial_result_ready = pyqtSignal(str)  # 部分识别结果信号
     
-    def __init__(self, model_path=os.path.abspath("../TTSandASR/Model"), sample_rate=8000, max_duration=50000):
+    def __init__(self, model_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "TTSandASR", "Model"), sample_rate=8000, max_duration=50000):
         super().__init__()
         self.model_path = model_path
+        print(model_path)
         self.sample_rate = sample_rate
         self.max_duration = max_duration
         

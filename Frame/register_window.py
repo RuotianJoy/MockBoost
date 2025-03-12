@@ -1,4 +1,5 @@
 import random
+import traceback
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -190,13 +191,19 @@ class RegisterWindow(QWidget):
             'UUID': userid
         }
 
-        # 调用控制器进行注册
-        controller = UserServerController()
-        result = controller.adduser_user_ServerStatus(user_data)
+        try:
+            # 调用控制器进行注册
+            controller = UserServerController()
+            result = controller.adduser_user_ServerStatus(user_data)
 
-        if result:
-            QMessageBox.information(self, 'Registration Successful', 'Account created successfully, please log in')
-            self.register_success.emit(username)  # 发送注册成功信号
-            self.switch_to_login.emit()  # 切换到登录窗口
-        else:
-            QMessageBox.warning(self, 'Registration Failed', 'Username already exists or registration failed')
+            if result:
+                QMessageBox.information(self, 'Registration Successful', 'Account created successfully, please log in')
+                self.register_success.emit(username)  # 发送注册成功信号
+                self.switch_to_login.emit()  # 切换到登录窗口
+            else:
+                QMessageBox.warning(self, 'Registration Failed', 'Username already exists or registration failed')
+        except Exception as e:
+            error_msg = f"注册过程中出错: {str(e)}"
+            print(error_msg)
+            traceback.print_exc()  # 打印详细的堆栈跟踪
+            QMessageBox.critical(self, '连接错误', f"无法连接到数据库服务器，请检查网络连接。\n详细信息: {str(e)}")

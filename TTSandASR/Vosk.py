@@ -9,23 +9,28 @@ class VoskRecognizer:
     # 单例实例
     _instance = None
     _initialized = False
-    def __new__(cls, model_path="Model", sample_rate=8000):
+    def __new__(cls, model_path=None, sample_rate=8000):
         # 如果单例实例不存在，则创建一个
         if cls._instance is None:
             cls._instance = super(VoskRecognizer, cls).__new__(cls)
             cls._instance._initialized = False
         return cls._instance
         
-    def __init__(self, model_path="Model", sample_rate=8000):
+    def __init__(self, model_path=None, sample_rate=8000):
         # 只在第一次初始化时加载模型
         if not self._initialized:
+            # 如果未指定模型路径，则使用默认路径
+            if model_path is None:
+                # 使用__file__获取当前文件的绝对路径，然后构建模型路径
+                model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Model")
+            
             self.model_path = model_path
             self.sample_rate = sample_rate
             self.model = None
             self.recognizer = None
             self._load_model()
             VoskRecognizer._initialized = True
-
+            
     def _load_model(self):
         if not os.path.exists(self.model_path):
             print("模型路径不存在，请下载模型并放置到该目录")
@@ -98,7 +103,7 @@ class VoskRecognizer:
             partial_result = self.recognizer.PartialResult()
             print("部分识别：", json.loads(partial_result)["partial"])
 
-def recognize_speech_once(model_path="D:\\Project\\MockBoost\\TTSandASR\\Model", sample_rate=8000, max_duration=10000, callback=None):
+def recognize_speech_once(model_path=None, sample_rate=8000, max_duration=10000, callback=None):
     """
     执行一次语音识别并返回识别结果
     
@@ -111,6 +116,11 @@ def recognize_speech_once(model_path="D:\\Project\\MockBoost\\TTSandASR\\Model",
     Returns:
         str: 识别到的文本
     """
+    # 如果未指定模型路径，则使用默认路径
+    if model_path is None:
+        # 使用__file__获取当前文件的绝对路径，然后构建模型路径
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Model")
+    
     # 使用单例模式，避免重复初始化模型
     recognizer = VoskRecognizer(model_path, sample_rate)
     return recognizer.recognize_speech(callback=callback, max_duration=max_duration)
