@@ -17,6 +17,90 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // 轮播图功能
+    const carousel = document.querySelector('.carousel');
+    if(carousel) {
+        const slides = carousel.querySelectorAll('.carousel-slide');
+        const prevBtn = carousel.querySelector('.prev');
+        const nextBtn = carousel.querySelector('.next');
+        const indicatorsContainer = carousel.querySelector('.carousel-indicators');
+        
+        let currentIndex = 0;
+        let interval;
+        
+        // 创建指示器
+        slides.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.classList.add('carousel-indicator');
+            if(index === 0) indicator.classList.add('active');
+            
+            indicator.addEventListener('click', () => {
+                goToSlide(index);
+                resetInterval();
+            });
+            
+            indicatorsContainer.appendChild(indicator);
+        });
+        
+        // 显示指定索引的幻灯片
+        function goToSlide(index) {
+            // 移除当前活动幻灯片的active类
+            slides[currentIndex].classList.remove('active');
+            const indicators = indicatorsContainer.querySelectorAll('.carousel-indicator');
+            indicators[currentIndex].classList.remove('active');
+            
+            // 更新当前索引
+            currentIndex = index;
+            
+            // 如果索引超出范围，则循环
+            if(currentIndex < 0) currentIndex = slides.length - 1;
+            if(currentIndex >= slides.length) currentIndex = 0;
+            
+            // 添加新的活动幻灯片的active类
+            slides[currentIndex].classList.add('active');
+            indicators[currentIndex].classList.add('active');
+        }
+        
+        // 下一张幻灯片
+        function nextSlide() {
+            goToSlide(currentIndex + 1);
+        }
+        
+        // 上一张幻灯片
+        function prevSlide() {
+            goToSlide(currentIndex - 1);
+        }
+        
+        // 重置自动播放间隔
+        function resetInterval() {
+            clearInterval(interval);
+            startAutoSlide();
+        }
+        
+        // 开始自动播放
+        function startAutoSlide() {
+            interval = setInterval(nextSlide, 5000); // 每5秒切换一次
+        }
+        
+        // 添加按钮事件监听器
+        if(prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+        }
+        
+        if(nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+        }
+        
+        // 开始自动播放
+        startAutoSlide();
+    }
+    
     // 联系表单验证
     const contactForm = document.getElementById('contactForm');
     if(contactForm) {

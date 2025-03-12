@@ -607,3 +607,83 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* 轮播图样式 */
+.carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-container {
+    display: flex;
+    transition: transform 0.5s ease;
+    width: 100%;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    display: none;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    display: block;
+}
+
+.carousel-slide img {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+}
+
+.carousel-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    padding: 0 15px;
+}
+
+.carousel-control {
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-control:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.carousel-indicators {
+    display: flex;
+    gap: 8px;
+}
+
+.carousel-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-indicator.active {
+    background-color: white;
+}
