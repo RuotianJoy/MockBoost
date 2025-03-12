@@ -11,7 +11,7 @@ class RegisterWindow(QWidget):
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('MockBoost 注册')
+        self.setWindowTitle('MockBoost Registration')
         self.setFixedSize(400, 600)  # 增加窗口高度以容纳验证码输入框
         self.verification_code = None  # 存储验证码
         self.email_verified = False  # 邮箱验证状态
@@ -24,39 +24,39 @@ class RegisterWindow(QWidget):
         layout.setContentsMargins(40, 40, 40, 40)
         
         # 添加标题
-        title = QLabel('注册新账户')
+        title = QLabel('Sign up for a new account')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet('font-size: 20px; font-weight: bold; margin-bottom: 20px;')
         layout.addWidget(title)
         
         # 用户名输入框
         self.username_input = QLineEdit()
-        self.username_input.setPlaceholderText('请输入用户名')
+        self.username_input.setPlaceholderText('Please enter a username')
         self.username_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.username_input)
         
         # 密码输入框
         self.password_input = QLineEdit()
-        self.password_input.setPlaceholderText('请输入密码')
+        self.password_input.setPlaceholderText('Please enter your password')
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.password_input)
         
         # 确认密码输入框
         self.confirm_password_input = QLineEdit()
-        self.confirm_password_input.setPlaceholderText('请确认密码')
+        self.confirm_password_input.setPlaceholderText('Please confirm your password')
         self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.confirm_password_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.confirm_password_input)
         
         # 手机号输入框
         self.job_input = QLineEdit()
-        self.job_input.setPlaceholderText('请输入意向职业')
+        self.job_input.setPlaceholderText('Please enter your intended occupation')
         self.job_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.job_input)
 
         self.major_input = QLineEdit()
-        self.major_input.setPlaceholderText('请输入专业')
+        self.major_input.setPlaceholderText('Please enter your major')
         self.major_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.major_input)
         
@@ -65,12 +65,12 @@ class RegisterWindow(QWidget):
         
         # 邮箱输入框
         self.email_input = QLineEdit()
-        self.email_input.setPlaceholderText('请输入邮箱')
+        self.email_input.setPlaceholderText('Please enter your email address')
         self.email_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         email_layout.addWidget(self.email_input)
         
         # 验证按钮
-        self.verify_button = QPushButton('发送验证码')
+        self.verify_button = QPushButton('Send the code')
         self.verify_button.setStyleSheet(
             'QPushButton {'
             '   background-color: #FF9800;'
@@ -91,7 +91,7 @@ class RegisterWindow(QWidget):
         
         # 验证码输入框
         self.verification_input = QLineEdit()
-        self.verification_input.setPlaceholderText('请输入验证码')
+        self.verification_input.setPlaceholderText('Please enter the code')
         self.verification_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
         layout.addWidget(self.verification_input)
         
@@ -99,7 +99,7 @@ class RegisterWindow(QWidget):
         button_layout = QHBoxLayout()
         
         # 注册按钮
-        register_button = QPushButton('注册')
+        register_button = QPushButton('Register')
         register_button.setStyleSheet(
             'QPushButton {'
             '   background-color: #4CAF50;'
@@ -116,7 +116,7 @@ class RegisterWindow(QWidget):
         register_button.clicked.connect(self.handle_register)
         
         # 返回登录按钮
-        back_button = QPushButton('返回登录')
+        back_button = QPushButton('Back to login')
         back_button.setStyleSheet(
             'QPushButton {'
             '   background-color: #2196F3;'
@@ -138,23 +138,23 @@ class RegisterWindow(QWidget):
         
         # 设置窗口布局
         self.setLayout(layout)
-    
+
     def send_verification_code(self):
         # 获取邮箱地址
         email = self.email_input.text()
         if not email:
             QMessageBox.warning(self, '验证失败', '请输入邮箱地址')
             return
-        
+
         try:
             # 发送验证码邮件
             self.verification_code = send_email(email)
-            QMessageBox.information(self, '验证码已发送', f'验证码已发送到邮箱 {email}，请查收')
+            QMessageBox.information(self, 'Verification Code Sent', f'Verification code has been sent to {email}, please check your inbox')
             self.verify_button.setEnabled(False)  # 禁用按钮防止重复发送
-            self.verify_button.setText('已发送')  # 更新按钮文本
+            self.verify_button.setText('Sent')  # 更新按钮文本
         except Exception as e:
-            QMessageBox.warning(self, '发送失败', f'验证码发送失败: {str(e)}')
-    
+            QMessageBox.warning(self, 'Sending Failed', f'Failed to send verification code: {str(e)}')
+
     def handle_register(self):
         # 获取输入信息
         username = self.username_input.text()
@@ -165,21 +165,21 @@ class RegisterWindow(QWidget):
         major = self.major_input.text()
         email = self.email_input.text()
         verification_input = self.verification_input.text()
-        
+
         # 验证输入
         if not (username and password and confirm_password and userid and major and job and email and verification_input):
-            QMessageBox.warning(self, '注册失败', '请填写所有字段')
+            QMessageBox.warning(self, 'Registration Failed', 'Please fill in all fields')
             return
-        
+
         if password != confirm_password:
-            QMessageBox.warning(self, '注册失败', '两次输入的密码不一致')
+            QMessageBox.warning(self, 'Registration Failed', 'Passwords do not match')
             return
-        
+
         # 验证邮箱验证码
         if not self.verification_code or int(verification_input) != self.verification_code:
-            QMessageBox.warning(self, '注册失败', '邮箱验证码错误')
+            QMessageBox.warning(self, 'Registration Failed', 'Incorrect email verification code')
             return
-        
+
         # 创建用户数据
         user_data = {
             'Name': username,
@@ -189,14 +189,14 @@ class RegisterWindow(QWidget):
             'Job': job,
             'UUID': userid
         }
-        
+
         # 调用控制器进行注册
         controller = UserServerController()
         result = controller.adduser_user_ServerStatus(user_data)
-        
+
         if result:
-            QMessageBox.information(self, '注册成功', '账户创建成功，请登录')
+            QMessageBox.information(self, 'Registration Successful', 'Account created successfully, please log in')
             self.register_success.emit(username)  # 发送注册成功信号
             self.switch_to_login.emit()  # 切换到登录窗口
         else:
-            QMessageBox.warning(self, '注册失败', '用户名已存在或注册失败')
+            QMessageBox.warning(self, 'Registration Failed', 'Username already exists or registration failed')
