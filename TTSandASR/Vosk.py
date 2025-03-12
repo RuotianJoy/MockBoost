@@ -9,14 +9,14 @@ class VoskRecognizer:
     # 单例实例
     _instance = None
     _initialized = False
-    def __new__(cls, model_path="D:\\Project\\MockBoost\\TTSandASR\\Model", sample_rate=8000):
+    def __new__(cls, model_path="Model", sample_rate=8000):
         # 如果单例实例不存在，则创建一个
         if cls._instance is None:
             cls._instance = super(VoskRecognizer, cls).__new__(cls)
             cls._instance._initialized = False
         return cls._instance
         
-    def __init__(self, model_path="D:\\Project\\MockBoost\\TTSandASR\\Model", sample_rate=8000):
+    def __init__(self, model_path="Model", sample_rate=8000):
         # 只在第一次初始化时加载模型
         if not self._initialized:
             self.model_path = model_path

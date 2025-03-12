@@ -1,3 +1,5 @@
+import os
+
 from PyQt6.QtCore import QThread, pyqtSignal
 import torch
 import redis
@@ -27,7 +29,9 @@ class DataThread(QThread):
         self.REDIS_HOST = "r-bp162llfgqnxpesejnpd.redis.rds.aliyuncs.com"  # 阿里云 Redis 地址
         self.REDIS_PORT = 6379               # Redis 端口
         self.REDIS_PASSWORD = "Liao031221"  # Redis 密码
-        self.MODEL_PATH = "D:\\Project\\MockBoost\\Training\\Deepseek"  # 模型路径
+        self.MODEL_PATH = os.path.abspath("../Training/Deepseek")
+
+  # 模型路径
         
     def run(self):
         try:

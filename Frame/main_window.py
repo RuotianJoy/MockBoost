@@ -1,3 +1,5 @@
+import os
+
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, \
     QTextEdit, QFrame, QComboBox, QLineEdit
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -29,7 +31,7 @@ class ASRThread(QThread):
     result_ready = pyqtSignal(str)  # 识别结果信号
     partial_result_ready = pyqtSignal(str)  # 部分识别结果信号
     
-    def __init__(self, model_path="D:\\Project\\MockBoost\\TTSandASR\\Model", sample_rate=8000, max_duration=50000):
+    def __init__(self, model_path=os.path.abspath("../TTSandASR/Model"), sample_rate=8000, max_duration=50000):
         super().__init__()
         self.model_path = model_path
         self.sample_rate = sample_rate
