@@ -59,7 +59,8 @@ MockBoost/
 ### 环境要求
 
 - Python 3.11
-- 支持的操作系统：Windows、macOS、Linux
+- CUDA 12.6
+- 支持的操作系统：Windows、Linux
 - N卡限定
 
 ### 安装步骤
@@ -76,6 +77,10 @@ cd MockBoost
 ```bash
 pip install -r requirements.txt
 ```
+3. 下载模型
+
+- 下载链接：[DeepSeekModel](https://pan.baidu.com/s/1NYg36ciGVjmy1CxYneKsaQ?pwd=3ayv)
+- 下载后将模型文件放入`Training/DeepSeek`文件夹下
 
 ## 使用方法
 
