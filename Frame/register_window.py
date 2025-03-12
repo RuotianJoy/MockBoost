@@ -12,7 +12,7 @@ class RegisterWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('MockBoost 注册')
-        self.setFixedSize(400, 500)  # 增加窗口高度以容纳验证码输入框
+        self.setFixedSize(400, 600)  # 增加窗口高度以容纳验证码输入框
         self.verification_code = None  # 存储验证码
         self.email_verified = False  # 邮箱验证状态
         self.setup_ui()
@@ -50,10 +50,15 @@ class RegisterWindow(QWidget):
         layout.addWidget(self.confirm_password_input)
         
         # 手机号输入框
-        self.phone_input = QLineEdit()
-        self.phone_input.setPlaceholderText('请输入手机号')
-        self.phone_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
-        layout.addWidget(self.phone_input)
+        self.job_input = QLineEdit()
+        self.job_input.setPlaceholderText('请输入意向职业')
+        self.job_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
+        layout.addWidget(self.job_input)
+
+        self.major_input = QLineEdit()
+        self.major_input.setPlaceholderText('请输入专业')
+        self.major_input.setStyleSheet('padding: 8px; border: 1px solid #ccc; border-radius: 4px;')
+        layout.addWidget(self.major_input)
         
         # 邮箱输入框和验证按钮的水平布局
         email_layout = QHBoxLayout()
@@ -156,12 +161,13 @@ class RegisterWindow(QWidget):
         password = self.password_input.text()
         confirm_password = self.confirm_password_input.text()
         userid = 'U' + str(random.randint(100001, 999999))
-        phone = self.phone_input.text()
+        job = self.job_input.text()
+        major = self.major_input.text()
         email = self.email_input.text()
         verification_input = self.verification_input.text()
         
         # 验证输入
-        if not (username and password and confirm_password and userid and phone and email and verification_input):
+        if not (username and password and confirm_password and userid and major and job and email and verification_input):
             QMessageBox.warning(self, '注册失败', '请填写所有字段')
             return
         
@@ -176,11 +182,12 @@ class RegisterWindow(QWidget):
         
         # 创建用户数据
         user_data = {
-            'username': username,
-            'password': password,
-            'userid': userid,
-            'phone': phone,
-            'email': email
+            'Name': username,
+            'Password': password,
+            'Email': email,
+            'Major': major,
+            'Job': job,
+            'UUID': userid
         }
         
         # 调用控制器进行注册

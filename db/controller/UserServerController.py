@@ -267,8 +267,8 @@ class UserServerController:
     def adduser_user_ServerStatus(self, status_data):
         model = CommonDb('user')
         consequence = model.selectAll(
-            f"username='{status_data['username']}' and password='{status_data['password']}' and userid='{status_data['userid']}' and phone='{status_data['phone']}' and email='{status_data['email']}'")
-        consequence2 = model.selectAll(f"username='{status_data['username']}'")
+            f"Name='{status_data['Name']}' and Password='{status_data['Password']}' and Email='{status_data['Email']}' and Major='{status_data['Major']}' and Job = '{status_data['Job']}' and UUID='{status_data['UUID']}'")
+        consequence2 = model.selectAll(f"Name='{status_data['Name']}'")
         # print("啊？"+str(consequence2))
         print(consequence)
         if consequence != None:
