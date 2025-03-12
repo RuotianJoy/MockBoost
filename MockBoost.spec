@@ -25,22 +25,42 @@ a = Analysis(
     binaries=[],
     datas=additional_datas,
     hiddenimports=[
-        'PyQt6.QtCore', 'PyQt6.QtWidgets', 'PyQt6.QtGui',  # PyQt6相关模块
-        'langchain', 'langchain.llms', 'langchain.embeddings',  # LangChain相关模块
-        'openai', 'numpy', 'pandas',  # AI和数据处理相关模块
-        'sounddevice', 'soundfile',  # 音频处理相关模块
-        'jieba', 'transformers',  # NLP相关模块
-        'vosk', 'pyttsx3',  # 语音识别和合成模块
-        'pymilvus', 'redis',  # 数据库相关模块
-        'sqlalchemy', 'pymysql',  # 数据库ORM和驱动
-        'TTS', 'TTS.api', 'TTS.tts', 'TTS.vocoder',  # TTS相关模块
-        'TTS.tts.layers.glow_tts', 'TTS.tts.utils', 'TTS.utils',  # TTS额外模块
-        'TTS.tts.models.vits', 'TTS.tts.layers.generic.wavenet',  # TTS VITS和Wavenet模块
-        'TTS.tts.layers.vits.networks', 'TTS.tts.configs.vits_config',  # TTS VITS配置和网络
-        'transformers.models', 'transformers.tokenization_utils',  # Transformers核心模块
-        'langchain.chains', 'langchain.prompts',  # LangChain核心模块
-        'vosk.model', 'vosk.recognizer',  # Vosk核心模块
-    ],
+    'PyQt6.QtCore', 'PyQt6.QtWidgets', 'PyQt6.QtGui',  # PyQt6相关模块
+    'langchain', 'langchain.llms', 'langchain.embeddings',  # LangChain相关模块
+    'openai', 'numpy', 'pandas',  # AI和数据处理相关模块
+    'sounddevice', 'soundfile',  # 音频处理相关模块
+    'jieba', 'transformers',  # NLP相关模块
+    'pyttsx3',  # 语音合成模块
+    'pymilvus', 'redis',  # 数据库相关模块
+    'sqlalchemy', 'pymysql',  # 数据库ORM和驱动
+    'TTS', 'TTS.api', 'TTS.tts', 'TTS.vocoder',  # TTS相关模块
+    'TTS.tts.layers.glow_tts', 'TTS.tts.utils', 'TTS.utils',  # TTS额外模块
+    'TTS.tts.models.vits', 'TTS.tts.layers.generic.wavenet',  # TTS VITS和Wavenet模块
+    'TTS.tts.layers.vits.networks', 'TTS.tts.configs.vits_config',  # TTS VITS配置和网络
+    'transformers.models', 'transformers.tokenization_utils',  # Transformers核心模块
+    'langchain.chains', 'langchain.prompts',  # LangChain核心模块
+
+    # Vosk相关模块 - 更全面的列表
+    'vosk',
+    'vosk.model', 'vosk.recognizer', 'vosk.decoder', 'vosk.gpumodel',
+    'vosk.gpuinit', 'vosk.vosk_cffi', 'vosk.transcriber',
+    'vosk.srt', 'vosk.vad', 'vosk.zipfile', 'vosk.model_pb2',
+    'vosk.silero_vad', 'vosk.align_pb2', 'vosk.align', 'vosk.aligner',
+    'vosk.batch_recognizer', 'vosk.builder', 'vosk.spk_model',
+    'vosk.connector', 'vosk.kaldi_recognizer', 'vosk.spk_recognizer',
+    'vosk.speex', 'vosk.lm_recognizer', 'vosk.resample',
+    'vosk.acmod', 'vosk.fsg', 'vosk.jsgf', 'vosk.lattice',
+    'vosk.kws', 'vosk.acmod_set', 'vosk.pocketsphinx',
+    'vosk.utility', 'vosk.config', 'vosk.buffer', 'vosk.transform',
+    'vosk.speaker', 'vosk.stt', 'vosk.alternatives', 'vosk.speaker_model',
+    'vosk.json_alternative', 'vosk.punctuation', 'vosk.language',
+    'vosk.model_loader', 'vosk.speech_params', 'vosk.audio_reader',
+    'vosk.audio_stream', 'vosk.dialog', 'vosk.streaming',
+    'vosk.chunk_stream', 'vosk.online_model', 'vosk.online_recognizer',
+    'vosk.decoder_config', 'vosk.utils', 'vosk.streaming_recognizer',
+    'vosk.audio_source', 'vosk.multi_recognizer', 'vosk.tokenizer',
+    'vosk.container', 'vosk.result_pb2', 'vosk.cloud',
+],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

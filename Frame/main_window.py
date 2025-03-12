@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHB
 from PyQt6.QtCore import QThread, pyqtSignal
 import sys
 from TTSandASR.ChatTTs import ChatTTS
-from TTSandASR.Vosk import recognize_speech_once
+from TTSandASR.Vosk import recognize_speech_once, get_resource_path
 from Main.Thread.ModelThread import ModelThread
 from Main.Thread.EndInterviewThread import EndInterviewThread
 from user_profile import UserProfileDialog
@@ -14,12 +14,12 @@ from user_profile import UserProfileDialog
 class TTSThread(QThread):
     """TTS语音合成线程"""
     finished = pyqtSignal()  # 完成信号
-    
+
     def __init__(self, text):
         super().__init__()
         self.text = text
         self.tts = ChatTTS()
-        
+
     def run(self):
         # 在线程中执行TTS语音合成和播放
         self.tts.play_text(self.text)
@@ -30,11 +30,12 @@ class ASRThread(QThread):
     """语音识别线程"""
     result_ready = pyqtSignal(str)  # 识别结果信号
     partial_result_ready = pyqtSignal(str)  # 部分识别结果信号
-    
-    def __init__(self, model_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "TTSandASR", "Model"), sample_rate=8000, max_duration=50000):
+
+    def __init__(self, model_path=None, sample_rate=8000, max_duration=50000):
         super().__init__()
-        self.model_path = model_path
-        print(model_path)
+        # 使用get_resource_path获取兼容打包环境的模型路径
+        self.model_path = model_path if model_path else get_resource_path("Model")
+        print("ASRThread model_path: " + str(self.model_path))
         self.sample_rate = sample_rate
         self.max_duration = max_duration
         
