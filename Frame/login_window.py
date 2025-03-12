@@ -1,12 +1,16 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal
 from db.controller.UserServerController import UserServerController
+from Frame.register_window import RegisterWindow
 
 class LoginWindow(QWidget):
+    switch_to_register = pyqtSignal()  # 切换到注册窗口信号
+    
     def __init__(self):
         super().__init__()
         self.setWindowTitle('MockBoost 登录')
-        self.setFixedSize(400, 300)
+        self.setFixedSize(400, 350)
+        self.register_window = None
         self.setup_ui()
         
     def setup_ui(self):
@@ -36,6 +40,9 @@ class LoginWindow(QWidget):
         layout.addWidget(self.password_input)
 
         
+        # 按钮布局
+        button_layout = QHBoxLayout()
+        
         # 登录按钮
         login_button = QPushButton('Login')
         login_button.setStyleSheet(
@@ -52,7 +59,27 @@ class LoginWindow(QWidget):
             '}'
         )
         login_button.clicked.connect(self.handle_login)
-        layout.addWidget(login_button)
+        
+        # 注册按钮
+        register_button = QPushButton('Register')
+        register_button.setStyleSheet(
+            'QPushButton {'
+            '   background-color: #2196F3;'
+            '   color: white;'
+            '   padding: 10px;'
+            '   border: none;'
+            '   border-radius: 4px;'
+            '   font-size: 16px;'
+            '}'
+            'QPushButton:hover {'
+            '   background-color: #0b7dda;'
+            '}'
+        )
+        register_button.clicked.connect(self.show_register_window)
+        
+        button_layout.addWidget(login_button)
+        button_layout.addWidget(register_button)
+        layout.addLayout(button_layout)
         
         # 设置窗口布局
         self.setLayout(layout)
@@ -80,3 +107,22 @@ class LoginWindow(QWidget):
     def open_main_window(self):
         # 这个方法将被AppController覆盖
         pass
+        
+    def show_register_window(self):
+        # 显示注册窗口
+        if not self.register_window:
+            self.register_window = RegisterWindow()
+            self.register_window.switch_to_login.connect(self.show_from_register)
+            self.register_window.register_success.connect(self.set_username_from_register)
+        self.register_window.show()
+        self.hide()
+    
+    def show_from_register(self):
+        # 从注册窗口返回登录窗口
+        if self.register_window:
+            self.register_window.hide()
+        self.show()
+    
+    def set_username_from_register(self, username):
+        # 设置从注册窗口获取的用户名
+        self.username_input.setText(username)
