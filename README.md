@@ -16,14 +16,19 @@ MockBoost是一个智能模拟面试系统，旨在帮助求职者提升面试�
 ## 项目展示
 1. 登陆界面
 
-![登陆界面](./ProjectImages/Login.png)
-2. 运行界面
+![登陆界面](./ProjectImages/LoginandRegister.png)
 
-![运行界面](./ProjectImages/Conversation.png)
-3. 个人信息
+2. 注册界面
+
+![注册界面](./ProjectImages/EngRegister.png)
+
+3. 运行界面
+
+![运行界面](./ProjectImages/Conversationwithvoice.png)
+4. 个人信息
 
 ![个人信息](./ProjectImages/PersonalInfo.png)
-4. 对话历史
+5. 对话历史
 
 ![对话历史](./ProjectImages/History.png)
 
@@ -44,7 +49,7 @@ MockBoost/
 ├── Main/             # 核心业务逻辑和模型交互
 ├── TTSandASR/        # 语音合成和识别相关代码
 ├── db/               # 数据库相关代码
-├── Training/         # 模型训练
+├── Training/         # 模型训练及数据
 └── requirements.txt  # 项目依赖
 ```
 
@@ -80,7 +85,7 @@ python -m Frame.main_frame
 ```
 
 2. 登录系统
-   - 使用已有账号登录或注册(未实现)新账号
+   - 使用已有账号登录或注册新账号
 
 3. 选择面试模式
    - 从下拉菜单中选择或输入面试职位（Java开发、Python开发等）
