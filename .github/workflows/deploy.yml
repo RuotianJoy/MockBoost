@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置环境变量
+        run: echo "API_KEY=${{ secrets.DEEPSEEKKEY }}" >> $GITHUB_ENV
+
+      - name: 运行 Python 脚本
+        run: python script.py
+        env:
+          API_KEY: ${{ secrets.DEEPSEEKKEY }}
