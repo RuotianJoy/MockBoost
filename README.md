@@ -6,6 +6,9 @@ MockBoost是一个智能模拟面试系统，旨在帮助求职者提升面试�
 
 我们的官网: [MockBoost](https://ruotianjoy.github.io/MockBoost/index.html)
 
+网页版: [MockBoostWeb](https://mockboost.cpolar.top/)
+
+
 ## 主要功能
 
 - **多职位面试模拟**：支持多种职位的面试模拟
