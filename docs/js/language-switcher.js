@@ -51,6 +51,10 @@ const translations = {
         'zh': '免费下载',
         'en': 'Free Download'
     },
+    'cta_button2': {
+        'zh': '立即试用',
+        'en': 'Free Use'
+    },
     'footer_links': {
         'zh': '快速链接',
         'en': 'Quick Links'
