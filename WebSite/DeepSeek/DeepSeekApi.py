@@ -4,12 +4,6 @@ from openai import OpenAI
 
 import os
 
-api_key = os.getenv("API_KEY")  # 读取环境变量
-if not api_key:
-    raise ValueError("API Key 未设置！")
-
-print(f"API Key 已加载（长度：{len(api_key)}）")  # 不要直接打印 API Key
-
 
 client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
 

@@ -13,9 +13,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 设置环境变量
-        run: echo "API_KEY=${{ secrets.DeepSeekKey }}" >> $GITHUB_ENV
+        run: echo "API_KEY=${{ secrets.DEEPSEEKKEY }}" >> $GITHUB_ENV
+
+      - name: 检查 API_KEY 是否正确加载
+        run: echo "API_KEY is set to $API_KEY"
+        env:
+          API_KEY: ${{ secrets.DEEPSEEKKEY }}
 
       - name: 运行 Python 脚本
         run: python script.py
         env:
-          API_KEY: ${{ secrets.DeepSeekKey }}
+          API_KEY: ${{ secrets.DEEPSEEKKEY }}
