@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockBoost - AI面试助手</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="auth-container" id="authContainer">
+            <div class="auth-box">
+                <h2>登录</h2>
+                <form id="loginForm">
+                    <input type="text" id="loginUsername" placeholder="用户名" required>
+                    <input type="password" id="loginPassword" placeholder="密码" required>
+                    <button type="submit">登录</button>
+                </form>
+                <p>还没有账号？<a href="#" onclick="toggleAuth()">注册</a></p>
+            </div>
+            <div class="auth-box hidden">
+                <h2>注册</h2>
+                <form id="registerForm">
+                    <input type="text" id="registerUsername" placeholder="用户名" required>
+                    <input type="password" id="registerPassword" placeholder="密码" required>
+                    <input type="password" id="confirmPassword" placeholder="确认密码" required>
+                    <input type="text" id="registerJob" placeholder="职业" required>
+                    <input type="text" id="registerMajor" placeholder="专业" required>
+                    <input type="email" id="registerEmail" placeholder="邮箱" required>
+                    <div class="verification-container">
+                        <input type="text" id="verificationCode" placeholder="验证码" required>
+                        <button type="button" id="sendVerificationBtn">发送验证码</button>
+                    </div>
+                    <button type="submit">注册</button>
+                </form>
+                <p>已有账号？<a href="#" onclick="toggleAuth()">登录</a></p>
+            </div>
+        </div>
+
+        <div class="chat-container hidden" id="chatContainer">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-container">
+                <button id="startVoice" class="voice-btn">🎤</button>
+                <input type="text" id="messageInput" placeholder="输入消息...">
+                <button id="sendMessage">发送</button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
