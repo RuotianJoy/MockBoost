@@ -319,6 +319,18 @@ class UserServerController:
         consequence = model.get_table_get(name)
         return consequence
 
+    def find_user_by_name(self, name):
+        model = CommonDb('user')
+        consequence = model.selectAll(f"Name='{name}'")
+        if not consequence:
+            result = False
+            print('无此项')
+        else:
+            result = True
+        print(consequence)
+        return consequence
+
+
     def insert_live_info(self,data):
         model = CommonDb('livemsg')
         consequence = model.insert_live_info(data)
@@ -358,3 +370,5 @@ class UserServerController:
         model = CommonDb('Dialog')
         consequence = model.add_Dialog(info)
         return consequence
+
+

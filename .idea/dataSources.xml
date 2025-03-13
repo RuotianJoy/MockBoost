@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="0@r-bp162llfgqnxpesejnpd.redis.rds.aliyuncs.com" uuid="d22b14a1-835b-48d8-bc4d-fa7c5cb85e29">
+      <driver-ref>redis</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
+      <jdbc-url>jdbc:redis://r-bp162llfgqnxpesejnpd.redis.rds.aliyuncs.com:6379/0</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="@gz-cynosdbmysql-grp-53cuswb9.sql.tencentcdb.com" uuid="6bee1874-91d0-4041-9a6b-744e575b1431">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://gz-cynosdbmysql-grp-53cuswb9.sql.tencentcdb.com:26837</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>
