@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_cors import CORS
 import sys
 import os
@@ -55,9 +55,51 @@ except Exception as redis_error:
 # 存储用户会话
 user_sessions = {}
 sqlflag = False
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('landing.html')
+
+@app.route('/auth')
+def auth():
+    register = request.args.get('register', 'false').lower() == 'true'
+    return render_template('auth.html', register=register)
+
+@app.route('/chat')
+def chat_page():
+    # Check if user is authenticated via session or query parameter
+    user_id = request.args.get('user_id')
+    if not user_id:
+        # Redirect to auth page if not authenticated
+        return redirect(url_for('auth'))
+    return render_template('chat.html')
+
+@app.route('/how-it-works')
+def how_it_works():
+    return render_template('landing.html')
+
+@app.route('/verify-auth', methods=['POST'])
+def verify_auth():
+    """Verify if a user is authenticated"""
+    data = request.json
+    user_id = data.get('user_id')
+    
+    if not user_id:
+        return jsonify({'authenticated': False})
+    
+    try:
+        # Check if the user exists in the database
+        user_info = {'username': user_id}
+        result = user_controller.find_user_by_name(user_id)
+        
+        # If user exists, they are authenticated
+        if result and len(result) > 0:
+            return jsonify({'authenticated': True})
+        else:
+            return jsonify({'authenticated': False})
+    except Exception as e:
+        print(f"Authentication verification error: {str(e)}")
+        return jsonify({'authenticated': False})
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -246,7 +288,7 @@ def chat():
         # 检查是否已经存在相同的用户消息
         message_exists = False
         for msg in messages:
-            if msg.get('role') == 'user' and msg.get('content') == message:
+            if msg.get('role') == 'user' and msg.get('content') + " [Reminder: Maintain professional interviewer persona for Software Developer]" == message:
                 message_exists = True
                 print(f"检测到重复消息: {message[:30]}...")
                 break

@@ -1,0 +1,208 @@
+/* Authentication specific styles */
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+    z-index: 2;
+    pointer-events: none; /* Ensure icon doesn't interfere with input */
+}
+
+.input-group input {
+    width: 100%;
+    padding: 1.2rem 1.5rem 1.2rem 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.input-group input:focus {
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+    background: rgba(74, 108, 247, 0.05);
+    outline: none;
+}
+
+.input-group input:focus + i {
+    color: #4a6cf7;
+}
+
+.verification-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.verification-container .input-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.verification-container button {
+    background: #f7b84a;
+    color: #333;
+    border: none;
+    border-radius: 12px;
+    padding: 0 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    max-width: 110px;
+    height: 45px;
+    flex-shrink: 0;
+}
+
+.verification-container button:hover {
+    background: #f9c66d;
+    transform: translateY(-2px);
+}
+
+.verification-container button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Dark theme for auth forms */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    padding: 2rem;
+}
+
+.auth-box {
+    background: rgba(40, 40, 40, 0.8);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-box h2 {
+    font-size: 2.2rem;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.auth-box h2 i {
+    color: #4a6cf7;
+}
+
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-box button[type="submit"] {
+    background: linear-gradient(135deg, #4a6cf7 0%, #2541b2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.auth-box button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+}
+
+.auth-box p {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-box a {
+    color: #4a6cf7;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-box a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.back-to-home {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.back-to-home a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.back-to-home a:hover {
+    color: #fff;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .auth-box {
+        padding: 2rem 1.5rem;
+    }
+    
+    .verification-container {
+        flex-direction: column;
+    }
+    
+    .verification-container button {
+        width: 100%;
+        max-width: none;
+        padding: 12px;
+    }
+} 

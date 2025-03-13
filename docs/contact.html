@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>联系我们 - MockBoost</title>
+    <title data-i18n="page_title_contact">联系我们 - MockBoost</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="ProjectImages/title.png">
 </head>
@@ -16,10 +16,10 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">首页</a></li>
-                    <li><a href="features.html">功能介绍</a></li>
-                    <li><a href="download.html">下载</a></li>
-                    <li><a href="contact.html" class="active">联系我们</a></li>
+                    <li><a href="index.html" data-i18n="nav_home">首页</a></li>
+                    <li><a href="features.html" data-i18n="nav_features">功能介绍</a></li>
+                    <li><a href="download.html" data-i18n="nav_download">下载</a></li>
+                    <li><a href="contact.html" class="active" data-i18n="nav_contact">联系我们</a></li>
                     <li><a href="https://github.com/RuotianJoy/MockBoost">GitHub</a></li>
                 </ul>
             </nav>
@@ -28,8 +28,8 @@
 
     <section class="page-header">
         <div class="container">
-            <h1>联系我们</h1>
-            <p>有任何问题或建议？请随时与我们联系</p>
+            <h1 data-i18n="contact_page_title">联系我们</h1>
+            <p data-i18n="contact_page_subtitle">有任何问题或建议？请随时与我们联系</p>
         </div>
     </section>
 
@@ -38,50 +38,50 @@
             <div class="contact-info">
                 <div class="contact-card">
                     <div class="contact-icon">📧</div>
-                    <h3>电子邮件</h3>
+                    <h3 data-i18n="contact_email">电子邮件</h3>
                     <p>2750768449@qq.com</p>
                     <p>liaojiongyi@gmail.com</p>
                 </div>
                 
                 <div class="contact-card">
                     <div class="contact-icon">💬</div>
-                    <h3>社交媒体</h3>
-                    <p>微信公众号：MockBoost</p>
-                    <p>知乎：MockBoost官方</p>
+                    <h3 data-i18n="contact_social">社交媒体</h3>
+                    <p data-i18n="contact_wechat">微信公众号：MockBoost</p>
+                    <p data-i18n="contact_zhihu">知乎：MockBoost官方</p>
                 </div>
                 
                 <div class="contact-card">
                     <div class="contact-icon">🏢</div>
-                    <h3>办公地址</h3>
-                    <p>广东省珠海市横琴高级人才公寓</p>
-                    <p>2栋 18楼</p>
+                    <h3 data-i18n="contact_address">办公地址</h3>
+                    <p data-i18n="contact_address_1">广东省珠海市横琴高级人才公寓</p>
+                    <p data-i18n="contact_address_2">2栋 18楼</p>
                 </div>
             </div>
             
             <div class="contact-form">
-                <h2>发送消息</h2>
+                <h2 data-i18n="contact_form_title">发送消息</h2>
                 <form id="contactForm">
                     <div class="form-group">
-                        <label for="name">您的姓名</label>
-                        <input type="text" id="name" name="name" required>
+                        <label for="name" data-i18n="contact_form_name">您的姓名</label>
+                        <input type="text" id="name" name="name" required data-i18n-placeholder="contact_form_name">
                     </div>
                     
                     <div class="form-group">
-                        <label for="email">电子邮箱</label>
-                        <input type="email" id="email" name="email" required>
+                        <label for="email" data-i18n="contact_form_email">电子邮箱</label>
+                        <input type="email" id="email" name="email" required data-i18n-placeholder="contact_form_email">
                     </div>
                     
                     <div class="form-group">
-                        <label for="subject">主题</label>
-                        <input type="text" id="subject" name="subject" required>
+                        <label for="subject" data-i18n="contact_form_subject">主题</label>
+                        <input type="text" id="subject" name="subject" required data-i18n-placeholder="contact_form_subject">
                     </div>
                     
                     <div class="form-group">
-                        <label for="message">消息内容</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
+                        <label for="message" data-i18n="contact_form_message">消息内容</label>
+                        <textarea id="message" name="message" rows="5" required data-i18n-placeholder="contact_form_message"></textarea>
                     </div>
                     
-                    <button type="submit" class="btn">发送消息</button>
+                    <button type="submit" class="btn" data-i18n="contact_form_submit">发送消息</button>
                 </form>
             </div>
         </div>
@@ -89,26 +89,26 @@
 
     <section class="faq-section">
         <div class="container">
-            <h2>常见问题</h2>
+            <h2 data-i18n="faq_title">常见问题</h2>
             
             <div class="faq-item">
-                <h3>MockBoost是免费软件吗？</h3>
-                <p>是的，MockBoost目前提供免费版本供所有用户使用。我们未来可能会推出包含更多高级功能的付费版本。</p>
+                <h3 data-i18n="faq_q1">MockBoost是免费软件吗？</h3>
+                <p data-i18n="faq_a1">是的，MockBoost目前提供免费版本供所有用户使用。我们未来可能会推出包含更多高级功能的付费版本。</p>
             </div>
             
             <div class="faq-item">
-                <h3>MockBoost支持哪些操作系统？</h3>
-                <p>目前MockBoost仅支持Windows 10及以上版本。我们正在开发macOS和Linux版本，敬请期待。</p>
+                <h3 data-i18n="faq_q2">MockBoost支持哪些操作系统？</h3>
+                <p data-i18n="faq_a2">目前MockBoost仅支持Windows 10及以上版本。我们正在开发macOS和Linux版本，敬请期待。</p>
             </div>
             
             <div class="faq-item">
-                <h3>如何更新MockBoost？</h3>
-                <p>MockBoost会自动检查更新。您也可以在本网站下载页面获取最新版本。</p>
+                <h3 data-i18n="faq_q3">如何更新MockBoost？</h3>
+                <p data-i18n="faq_a3">MockBoost会自动检查更新。您也可以在本网站下载页面获取最新版本。</p>
             </div>
             
             <div class="faq-item">
-                <h3>我可以离线使用MockBoost吗？</h3>
-                <p>MockBoost可以离线运行，因为是基于本地大模型的。</p>
+                <h3 data-i18n="faq_q4">我可以离线使用MockBoost吗？</h3>
+                <p data-i18n="faq_a4">MockBoost可以离线运行，因为是基于本地大模型的。</p>
             </div>
         </div>
     </section>
@@ -121,25 +121,26 @@
                     <h3>MockBoost</h3>
                 </div>
                 <div class="footer-links">
-                    <h4>快速链接</h4>
+                    <h4 data-i18n="footer_links">快速链接</h4>
                     <ul>
-                        <li><a href="index.html">首页</a></li>
-                        <li><a href="features.html">功能介绍</a></li>
-                        <li><a href="download.html">下载</a></li>
-                        <li><a href="contact.html">联系我们</a></li>
+                        <li><a href="index.html" data-i18n="nav_home">首页</a></li>
+                        <li><a href="features.html" data-i18n="nav_features">功能介绍</a></li>
+                        <li><a href="download.html" data-i18n="nav_download">下载</a></li>
+                        <li><a href="contact.html" data-i18n="nav_contact">联系我们</a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">
-                    <h4>联系我们</h4>
+                    <h4 data-i18n="footer_contact">联系我们</h4>
                     <p>邮箱: 2750768449@qq.com</p>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 MockBoost. 保留所有权利。</p>
+                <p>&copy; 2025 MockBoost. <span data-i18n="footer_copyright">保留所有权利</span>.</p>
             </div>
         </div>
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/language-switcher.js"></script>
 </body>
 </html>

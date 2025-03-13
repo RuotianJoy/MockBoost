@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockBoost - AI Interview Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Landing Page Section -->
+        <div class="landing-container" id="landingContainer">
+            <div class="landing-header">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <h1>MockBoost</h1>
+                </div>
+                <div class="nav-buttons">
+                    <a href="#" class="how-it-works-link">How It Works</a>
+                    <a href="/auth" class="nav-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="/auth?register=true" class="nav-btn"><i class="fas fa-user-plus"></i> Register</a>
+                </div>
+            </div>
+            
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1>Ace Your Next Interview with AI</h1>
+                    <p>MockBoost uses advanced AI to simulate realistic interview scenarios, providing personalized feedback to help you land your dream job.</p>
+                    <a href="/auth" class="cta-button"><i class="fas fa-rocket"></i> Get Started</a>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Interview Preparation">
+                </div>
+            </div>
+            
+            <div class="features-section">
+                <h2>Why Choose MockBoost?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                        <h3>AI-Powered Interviews</h3>
+                        <p>Our advanced AI simulates real interviewers, adapting questions based on your responses.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-user-tie"></i></div>
+                        <h3>Industry-Specific</h3>
+                        <p>Tailored interviews for various industries and positions to match your career goals.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                        <h3>Real-time Feedback</h3>
+                        <p>Get instant feedback on your answers to improve your interview skills.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-history"></i></div>
+                        <h3>Progress Tracking</h3>
+                        <p>Track your improvement over time with detailed interview history.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonials-section">
+                <h2>What Our Users Say</h2>
+                <div class="testimonials-container">
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="testimonial-content">
+                            <p>"MockBoost helped me prepare for my software engineering interview at a top tech company. The AI asked challenging questions that actually came up in my real interview!"</p>
+                            <div class="testimonial-author">- Michael K., Software Engineer</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="testimonial-content">
+                            <p>"As someone who gets nervous during interviews, practicing with MockBoost gave me the confidence I needed. The feedback was incredibly helpful!"</p>
+                            <div class="testimonial-author">- Sarah L., Marketing Manager</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="testimonial-content">
+                            <p>"I used MockBoost to prepare for my career change into data science. The industry-specific questions helped me identify knowledge gaps I needed to fill."</p>
+                            <div class="testimonial-author">- David R., Data Scientist</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <h2>Ready to Boost Your Interview Skills?</h2>
+                <p>Join thousands of job seekers who have improved their interview performance with MockBoost.</p>
+                <a href="/auth" class="cta-button"><i class="fas fa-play-circle"></i> Start Now</a>
+            </div>
+            
+            <footer class="landing-footer">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>MockBoost</h3>
+                        <p>Your AI-powered interview preparation assistant.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                            <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+                            <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                            <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Connect With Us</h3>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2023 MockBoost. All rights reserved.</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- How It Works Modal -->
+    <div class="modal" id="howItWorksModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>How MockBoost Works</h3>
+                <button class="close-modal-btn" id="closeHowItWorksBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Create Your Profile</h4>
+                            <p>Sign up and provide information about your intended job and background.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Start an Interview</h4>
+                            <p>Begin a simulated interview tailored to your target position.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Answer Questions</h4>
+                            <p>Respond to realistic interview questions from our AI interviewer.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Get Feedback</h4>
+                            <p>Receive instant feedback and suggestions to improve your answers.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Track Progress</h4>
+                            <p>Review your interview history and see your improvement over time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/landing.js"></script>
+</body>
+</html> 

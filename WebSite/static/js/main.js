@@ -1,6 +1,7 @@
 // DOM Elements
 const authContainer = document.getElementById('authContainer');
 const chatContainer = document.getElementById('chatContainer');
+const landingContainer = document.getElementById('landingContainer');
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const messageInput = document.getElementById('messageInput');
@@ -8,12 +9,211 @@ const sendButton = document.getElementById('sendMessage');
 const chatMessages = document.getElementById('chatMessages');
 const startVoiceButton = document.getElementById('startVoice');
 const sendVerificationBtn = document.getElementById('sendVerificationBtn');
+const howItWorksModal = document.getElementById('howItWorksModal');
+
+// Landing page buttons
+const loginNavBtn = document.getElementById('loginNavBtn');
+const registerNavBtn = document.getElementById('registerNavBtn');
+const getStartedBtn = document.getElementById('getStartedBtn');
+const startNowBtn = document.getElementById('startNowBtn');
+const backToHomeBtn = document.getElementById('backToHomeBtn');
+const backToHomeFromRegister = document.getElementById('backToHomeFromRegister');
+const closeHowItWorksBtn = document.getElementById('closeHowItWorksBtn');
 
 // Audio Context and Recorder
 let mediaRecorder;
 let audioChunks = [];
 let verificationCode = null; // 存储验证码
 let conversationId = null; // 存储当前对话ID
+
+// Landing Page Module
+const LandingPageModule = (function() {
+    function init() {
+        console.log('Initializing landing page module');
+        
+        // IMPORTANT: Force clear any stored authentication data
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('conversation_id');
+        
+        // Always show landing page on init
+        landingContainer.classList.remove('hidden');
+        authContainer.classList.add('hidden');
+        chatContainer.classList.add('hidden');
+        
+        // Add event listeners for landing page buttons
+        if (loginNavBtn) {
+            loginNavBtn.addEventListener('click', showLoginForm);
+        }
+        
+        if (registerNavBtn) {
+            registerNavBtn.addEventListener('click', showRegisterForm);
+        }
+        
+        if (getStartedBtn) {
+            getStartedBtn.addEventListener('click', showLoginForm);
+        }
+        
+        if (startNowBtn) {
+            startNowBtn.addEventListener('click', showLoginForm);
+        }
+        
+        if (backToHomeBtn) {
+            backToHomeBtn.addEventListener('click', showLandingPage);
+        }
+        
+        if (backToHomeFromRegister) {
+            backToHomeFromRegister.addEventListener('click', showLandingPage);
+        }
+
+
+        
+        // Add event listeners for "How It Works" modal
+        const howItWorksLinks = document.querySelectorAll('.how-it-works-link');
+        howItWorksLinks.forEach(link => {
+            link.addEventListener('click', showHowItWorksModal);
+        });
+        
+        if (closeHowItWorksBtn) {
+            closeHowItWorksBtn.addEventListener('click', hideHowItWorksModal);
+        }
+        
+        // Add animation to feature cards on scroll
+        animateOnScroll();
+    }
+    
+    function showLoginForm() {
+        landingContainer.classList.add('hidden');
+        authContainer.classList.remove('hidden');
+        
+        // Make sure login form is visible (not register)
+        const authBoxes = document.querySelectorAll('.auth-box');
+        if (authBoxes[0].classList.contains('hidden')) {
+            AuthModule.toggleAuth(); // Switch to login if register is showing
+        }
+    }
+    
+    function showRegisterForm() {
+        landingContainer.classList.add('hidden');
+        authContainer.classList.remove('hidden');
+        
+        // Make sure register form is visible (not login)
+        const authBoxes = document.querySelectorAll('.auth-box');
+        if (!authBoxes[0].classList.contains('hidden')) {
+            AuthModule.toggleAuth(); // Switch to register if login is showing
+        }
+    }
+    
+    function showLandingPage() {
+        authContainer.classList.add('hidden');
+        landingContainer.classList.remove('hidden');
+    }
+    
+    function showHowItWorksModal() {
+        if (howItWorksModal) {
+            howItWorksModal.classList.add('active');
+        }
+    }
+    
+    function hideHowItWorksModal() {
+        if (howItWorksModal) {
+            howItWorksModal.classList.remove('active');
+        }
+    }
+    
+    function animateOnScroll() {
+        // Add animation to elements when they come into view
+        const animateElements = document.querySelectorAll('.feature-card, .testimonial-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animateElements.forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(element);
+        });
+    }
+    
+    // Function to verify if the user is authenticated
+    async function verifyUserAuthentication(userId) {
+        try {
+            const response = await fetch('/verify-auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Authentication verification failed');
+            }
+            
+            const data = await response.json();
+            return data.authenticated;
+        } catch (error) {
+            console.error('Authentication verification failed:', error);
+            // If verification fails, clear stored credentials as a safety measure
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('conversation_id');
+            return false;
+        }
+    }
+    
+    // Function to show loading overlay
+    function showLoadingOverlay(message) {
+        // Create loading overlay if it doesn't exist
+        let loadingOverlay = document.getElementById('loadingOverlay');
+        if (!loadingOverlay) {
+            loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loadingOverlay';
+            loadingOverlay.className = 'loading-overlay';
+            
+            const loadingContent = document.createElement('div');
+            loadingContent.className = 'loading-content';
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            spinner.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            const loadingMessage = document.createElement('div');
+            loadingMessage.id = 'loadingMessage';
+            loadingMessage.className = 'loading-message';
+            
+            loadingContent.appendChild(spinner);
+            loadingContent.appendChild(loadingMessage);
+            loadingOverlay.appendChild(loadingContent);
+            
+            document.body.appendChild(loadingOverlay);
+        }
+        
+        // Set message and show overlay
+        document.getElementById('loadingMessage').textContent = message || 'Loading...';
+        loadingOverlay.classList.add('active');
+    }
+    
+    // Function to hide loading overlay
+    function hideLoadingOverlay() {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.remove('active');
+        }
+    }
+    
+    return {
+        init: init,
+        showLoginForm: showLoginForm,
+        showRegisterForm: showRegisterForm,
+        showLandingPage: showLandingPage,
+        showLoadingOverlay: showLoadingOverlay,
+        hideLoadingOverlay: hideLoadingOverlay
+    };
+})();
 
 // 聊天功能封装
 const ChatModule = (function() {
@@ -580,6 +780,9 @@ const AuthModule = (function() {
         const username = document.getElementById('loginUsername').value;
         const password = document.getElementById('loginPassword').value;
         
+        // Show loading overlay
+        LandingPageModule.showLoadingOverlay('Logging in...');
+        
         // 显示加载动画
         const submitBtn = loginForm.querySelector('button');
         const originalBtnText = submitBtn.innerHTML;
@@ -605,12 +808,20 @@ const AuthModule = (function() {
                 submitBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #218838 100%)';
                 
                 setTimeout(() => {
+                    // Hide loading overlay
+                    LandingPageModule.hideLoadingOverlay();
+                    
+                    // Hide both landing and auth containers
+                    landingContainer.classList.add('hidden');
                     authContainer.classList.add('hidden');
                     chatContainer.classList.remove('hidden');
                     // 初始化聊天模块
                     ChatModule.init();
                 }, 1000);
             } else {
+                // Hide loading overlay
+                LandingPageModule.hideLoadingOverlay();
+                
                 // 失败动画
                 submitBtn.innerHTML = '<i class="fas fa-times"></i> 登录失败';
                 submitBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
@@ -623,6 +834,9 @@ const AuthModule = (function() {
                 }, 1000);
             }
         } catch (error) {
+            // Hide loading overlay
+            LandingPageModule.hideLoadingOverlay();
+            
             submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 错误';
             submitBtn.style.background = 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)';
             
@@ -786,6 +1000,9 @@ const AuthModule = (function() {
     };
 })();
 
+// Make toggleAuth globally accessible
+window.toggleAuth = AuthModule.toggleAuth;
+
 // 添加CSS样式
 const style = document.createElement('style');
 style.textContent = `
@@ -859,6 +1076,21 @@ document.head.appendChild(style);
 document.addEventListener('DOMContentLoaded', function() {
     console.log('页面加载完成');
     
+    // Force clear any stored authentication data
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('conversation_id');
+    
+    // Ensure correct initial state - always start with landing page
+    if (landingContainer) landingContainer.classList.remove('hidden');
+    if (authContainer) authContainer.classList.add('hidden');
+    if (chatContainer) chatContainer.classList.add('hidden');
+    
+    // Initialize landing page module
+    LandingPageModule.init();
+    
+    // 初始化认证模块
+    AuthModule.init();
+    
     // 检查开始面试按钮是否存在，但不再绑定事件
     const startInterviewBtn = document.getElementById('startInterviewBtn');
     if (startInterviewBtn) {
@@ -869,29 +1101,9 @@ document.addEventListener('DOMContentLoaded', function() {
         startInterviewBtn.style.display = 'flex';
         startInterviewBtn.style.visibility = 'visible';
         startInterviewBtn.style.opacity = '1';
-        
-        // 不再这里绑定点击事件，而是在 ChatModule.init 中绑定
-        // startInterviewBtn.addEventListener('click', function() {
-        //     console.log('开始面试按钮被点击');
-        //     ChatModule.startInterview();
-        // });
     } else {
         console.error('未找到开始面试按钮');
     }
-    
-    // 初始化认证模块
-    AuthModule.init();
-    
-    // 添加一个延迟检查
-    setTimeout(function() {
-        const startInterviewBtn = document.getElementById('startInterviewBtn');
-        if (startInterviewBtn) {
-            console.log('延迟检查按钮状态:', window.getComputedStyle(startInterviewBtn).display);
-            startInterviewBtn.style.display = 'flex';
-            startInterviewBtn.style.visibility = 'visible';
-            startInterviewBtn.style.opacity = '1';
-        }
-    }, 2000);
 });
 
 // 在 UserProfileModule 中添加历史对话功能

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockBoost - Interview Chat</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <div class="back-to-home">
+                    <a href="/" id="backToHomeFromConversation"><i class="fas fa-arrow-left"></i> Back to Home</a>
+                </div>
+                <h2><i class="fas fa-robot"></i> MockBoost AI</h2>
+                <div class="user-info">
+                    <div class="job-input-container">
+                        <input type="text" id="jobInput" placeholder="Intended Job" title="Enter your intended job">
+                    </div>
+                    <button id="startInterviewBtn" class="start-interview-btn">
+                        <i class="fas fa-play-circle"></i> Start
+                    </button>
+                    <button id="clearChatBtn" class="clear-chat-btn" title="Clear Page">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="user-avatar" id="userAvatarBtn">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User profile sidebar -->
+            <div class="user-profile-sidebar" id="userProfileSidebar">
+                <div class="profile-header">
+                    <h3>Personal Info</h3>
+                    <button class="close-profile-btn" id="closeProfileBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <span class="info-label">Username</span>
+                            <span class="info-value" id="profileUsername">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Job</span>
+                            <span class="info-value" id="profileJob">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Major</span>
+                            <span class="info-value" id="profileMajor">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value" id="profileEmail">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- History section -->
+                    <div class="history-section">
+                        <h4>History</h4>
+                        <div class="history-list" id="historyList">
+                            <div class="loading-history">Loading...</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Welcome to Interview!
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <button id="startVoice" class="voice-btn"><i class="fas fa-microphone"></i></button>
+                <input type="text" id="messageInput" placeholder="Insert...">
+                <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            
+            <!-- Overlay -->
+            <div class="overlay" id="overlay"></div>
+        </div>
+    </div>
+
+    <!-- History dialog modal -->
+    <div class="history-dialog" id="historyDialog">
+        <div class="history-dialog-content">
+            <div class="history-dialog-header">
+                <h3 id="historyDialogTitle"><i class="fas fa-history"></i> History</h3>
+                <button class="close-history-btn" id="closeHistoryBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="history-dialog-body">
+                <div class="history-info">
+                    <div class="history-info-item">
+                        <span class="info-label"><i class="fas fa-fingerprint"></i>CID:</span>
+                        <span class="info-value" id="historyDialogId"></span>
+                    </div>
+                    <div class="history-info-item">
+                        <span class="info-label"><i class="fas fa-briefcase"></i>Job:</span>
+                        <span class="info-value" id="historyDialogMode"></span>
+                    </div>
+                </div>
+                <div class="history-chat-content" id="historyChatContent">
+                    <div class="loading-history">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/chat.js"></script>
+</body>
+</html> 

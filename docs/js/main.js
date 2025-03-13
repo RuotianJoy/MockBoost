@@ -132,13 +132,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 添加下载按钮点击事件
-    const downloadButtons = document.querySelectorAll('.download-btn');
-    downloadButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('下载功能即将上线，敬请期待！');
-        });
-    });
+    // const downloadButtons = document.querySelectorAll('.download-btn');
+    // downloadButtons.forEach(button => {
+    //     button.addEventListener('click', function(e) {
+    //         e.preventDefault();
+    //         alert('下载功能即将上线，敬请期待！');
+    //     });
+    // });
     
     // 添加特性卡片动画效果
     const featureCards = document.querySelectorAll('.feature-card');

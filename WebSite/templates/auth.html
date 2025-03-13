@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockBoost - Authentication</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styles to ensure proper icon positioning */
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2rem;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding-left: 45px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Fix verification button width */
+        .verification-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .verification-container button {
+            min-width: 110px;
+            max-width: 110px;
+            height: 45px;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 480px) {
+            .verification-container {
+                flex-direction: column;
+            }
+            
+            .verification-container button {
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="auth-container" id="authContainer">
+            <div class="auth-box" id="loginBox">
+                <h2><i class="fas fa-user-circle"></i> Login</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="loginUsername" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+                </form>
+                <p>No Account? <a href="#" id="switchToRegister">Register</a></p>
+                <div class="back-to-home">
+                    <a href="/" id="backToHomeBtn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+                </div>
+            </div>
+            <div class="auth-box hidden" id="registerBox">
+                <h2><i class="fas fa-user-plus"></i> Register</h2>
+                <form id="registerForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="registerUsername" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="registerPassword" placeholder="Password" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-check-circle"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-briefcase"></i>
+                        <input type="text" id="registerJob" placeholder="Job" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-graduation-cap"></i>
+                        <input type="text" id="registerMajor" placeholder="Major" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="verification-container">
+                        <div class="input-group">
+                            <i class="fas fa-key"></i>
+                            <input type="text" id="verificationCode" placeholder="Verification Code" required>
+                        </div>
+                        <button type="button" id="sendVerificationBtn"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                    <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
+                </form>
+                <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+                <div class="back-to-home">
+                    <a href="/" id="backToHomeFromRegister"><i class="fas fa-arrow-left"></i> Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+</body>
+</html> 

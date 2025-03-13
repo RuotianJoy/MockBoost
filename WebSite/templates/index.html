@@ -3,178 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MockBoost - AI Interview Assistant</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>MockBoost - Redirecting...</title>
+    <meta http-equiv="refresh" content="0;url=/" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .redirect-container {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        a {
+            color: #4a6cf7;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <div class="auth-container" id="authContainer">
-            <div class="auth-box">
-                <h2><i class="fas fa-user-circle"></i> Login</h2>
-                <form id="loginForm">
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="loginUsername" placeholder="Username" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="loginPassword" placeholder="Password" required>
-                    </div>
-                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
-                </form>
-                <p>No Count？<a href="#" onclick="toggleAuth()">Register</a></p>
-            </div>
-            <div class="auth-box hidden">
-                <h2><i class="fas fa-user-plus"></i> Register</h2>
-                <form id="registerForm">
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="registerUsername" placeholder="Username" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="registerPassword" placeholder="Password" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-check-circle"></i>
-                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-briefcase"></i>
-                        <input type="text" id="registerJob" placeholder="Job" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-graduation-cap"></i>
-                        <input type="text" id="registerMajor" placeholder="Major" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="registerEmail" placeholder="Email" required>
-                    </div>
-                    <div class="verification-container">
-                        <div class="input-group">
-                            <i class="fas fa-key"></i>
-                            <input type="text" id="verificationCode" placeholder="code" required>
-                        </div>
-                        <button type="button" id="sendVerificationBtn"><i class="fas fa-paper-plane"></i> Send Code</button>
-                    </div>
-                    <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
-                </form>
-                <p>已有账号？<a href="#" onclick="toggleAuth()">Login</a></p>
-            </div>
-        </div>
-
-        <div class="chat-container hidden" id="chatContainer">
-            <div class="chat-header">
-                <h2><i class="fas fa-robot"></i> MockBoost AI</h2>
-                <div class="user-info">
-                    <div class="job-input-container">
-                        <input type="text" id="jobInput" placeholder="Intended Job" title="Enter your intended job">
-                    </div>
-                    <button id="startInterviewBtn" class="start-interview-btn" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
-                        <i class="fas fa-play-circle"></i> Start
-                    </button>
-                    <button id="clearChatBtn" class="clear-chat-btn" title="Clear Page">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <div class="user-avatar" id="userAvatarBtn">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 用户信息侧边栏 -->
-            <div class="user-profile-sidebar" id="userProfileSidebar">
-                <div class="profile-header">
-                    <h3>Personal Info</h3>
-                    <button class="close-profile-btn" id="closeProfileBtn">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="profile-content">
-                    <div class="profile-avatar">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <span class="info-label">Username</span>
-                            <span class="info-value" id="profileUsername">加载中...</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Major</span>
-                            <span class="info-value" id="profileJob">加载中...</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Major</span>
-                            <span class="info-value" id="profileMajor">加载中...</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Email</span>
-                            <span class="info-value" id="profileEmail">加载中...</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 历史对话部分 -->
-                    <div class="history-section">
-                        <h4>History</h4>
-                        <div class="history-list" id="historyList">
-                            <div class="loading-history">Loading...</div>
-                        </div>
-                    </div>
-                    
-                    <button class="logout-btn" id="logoutBtn" onclick="location.reload()">
-                        <i class="fas fa-sign-out-alt"></i> QUIT
-                    </button>
-                </div>
-            </div>
-            
-            <div class="chat-messages" id="chatMessages">
-                <div class="message bot-message">
-                    Welcome to Interview!
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <button id="startVoice" class="voice-btn"><i class="fas fa-microphone"></i></button>
-                <input type="text" id="messageInput" placeholder="Insert...">
-                <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
-            </div>
-            
-            <!-- 添加遮罩层 -->
-            <div class="overlay" id="overlay"></div>
-        </div>
+    <div class="redirect-container">
+        <h1>Redirecting...</h1>
+        <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
     </div>
-
-    <!-- 添加历史对话详情模态框 -->
-    <div class="history-dialog" id="historyDialog">
-        <div class="history-dialog-content">
-            <div class="history-dialog-header">
-                <h3 id="historyDialogTitle">History</h3>
-                <button class="close-history-btn" id="closeHistoryBtn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="history-dialog-body">
-                <div class="history-info">
-                    <div class="history-info-item">
-                        <span class="info-label">Conversation ID:</span>
-                        <span class="info-value" id="historyDialogId"></span>
-                    </div>
-                    <div class="history-info-item">
-                        <span class="info-label">Intended Job:</span>
-                        <span class="info-value" id="historyDialogMode"></span>
-                    </div>
-                </div>
-                <div class="history-chat-content" id="historyChatContent">
-                    <div class="loading-history">Loading...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="/static/js/main.js"></script>
 </body>
 </html>
