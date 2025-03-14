@@ -30,9 +30,11 @@ MockBoost是一个智能模拟面试系统，旨在帮助求职者提升面试�
 3. 运行界面
 
 ![运行界面](./ProjectImages/Conversationwithvoice.png)
+
 4. 个人信息
 
 ![个人信息](./ProjectImages/PersonalInfo.png)
+
 5. 对话历史
 
 ![对话历史](./ProjectImages/History.png)
