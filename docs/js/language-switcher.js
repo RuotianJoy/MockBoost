@@ -53,7 +53,7 @@ const translations = {
     },
     'cta_button2': {
         'zh': '立即试用',
-        'en': 'Free Use'
+        'en': 'Free Use in Web'
     },
     'footer_links': {
         'zh': '快速链接',
