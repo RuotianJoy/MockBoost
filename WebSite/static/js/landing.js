@@ -5,22 +5,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeHowItWorksBtn = document.getElementById('closeHowItWorksBtn');
     
     if (howItWorksLink) {
-        howItWorksLink.addEventListener('click', function(e) {
+        howItWorksLink.addEventListener('click', (e) => {
             e.preventDefault();
-            howItWorksModal.style.display = 'flex';
+            howItWorksModal.classList.add('active');
         });
     }
-    
+
     if (closeHowItWorksBtn) {
-        closeHowItWorksBtn.addEventListener('click', function() {
-            howItWorksModal.style.display = 'none';
+        closeModalBtn.addEventListener('click', () => {
+            howItWorksModal.classList.remove('active');
         });
     }
-    
+
     // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', (e) => {
         if (e.target === howItWorksModal) {
-            howItWorksModal.style.display = 'none';
+            howItWorksModal.classList.remove('active');
         }
     });
     

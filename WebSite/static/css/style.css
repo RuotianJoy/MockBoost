@@ -1522,24 +1522,27 @@ button:active {
 
 /* How It Works Modal */
 .modal {
+    /* 移除display: flex */
+    display: none; /* 改为默认隐藏 */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
-    display: flex;
+    /* 保留原有flex设置 */
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    /* 移除原有的opacity和visibility */
+    /* 添加过渡效果 */
+    transition: opacity 0.3s ease;
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
 }
 
 .modal.active {
     opacity: 1;
-    visibility: visible;
+    display: flex; /* 激活时显示flex布局 */
 }
 
 .modal-content {
@@ -1547,10 +1550,14 @@ button:active {
     border-radius: 15px;
     width: 90%;
     max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    animation: modalFadeIn 0.5s ease forwards;
+    /* 添加以下内容 */
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    margin: 20px; /* 移动端边距 */
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
 }
 
 .modal-header {
@@ -1564,6 +1571,23 @@ button:active {
 .modal-header h3 {
     font-size: 1.8rem;
     color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        margin: 10px;
+    }
+
+    .step {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .step-number {
+        margin-bottom: 1rem;
+    }
 }
 
 .close-modal-btn {
