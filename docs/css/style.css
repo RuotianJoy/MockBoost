@@ -285,7 +285,7 @@ nav ul li a.active, nav ul li a:hover {
 
 .feature-text ul li {
     margin-bottom: 10px;
-    color: #34495e;
+    color: #b0b0b0;
 }
 
 /* 下载页样式 */
@@ -377,10 +377,10 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .installation-guide {
-    background-color: #f8f9fa;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 30px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 .installation-guide h3 {
