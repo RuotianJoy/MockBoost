@@ -8,8 +8,8 @@
 body {
     font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f8f9fa;
+    color: #e0e0e0;
+    background-color: #121212;
 }
 
 .container {
@@ -21,17 +21,17 @@ body {
 
 a {
     text-decoration: none;
-    color: #007bff;
+    color: #64b5f6;
     transition: color 0.3s ease;
 }
 
 a:hover {
-    color: #0056b3;
+    color: #90caf9;
 }
 
 .btn {
     display: inline-block;
-    background-color: #007bff;
+    background-color: #1976d2;
     color: white;
     padding: 12px 24px;
     border-radius: 4px;
@@ -40,13 +40,13 @@ a:hover {
 }
 
 .btn:hover {
-    background-color: #0056b3;
+    background-color: #1565c0;
 }
 
 /* 头部样式 */
 header {
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     padding: 15px 0;
     position: sticky;
     top: 0;
@@ -71,7 +71,7 @@ header .container {
 
 .logo h1 {
     font-size: 1.5rem;
-    color: #007bff;
+    color: #64b5f6;
 }
 
 nav ul {
@@ -84,21 +84,21 @@ nav ul li {
 }
 
 nav ul li a {
-    color: #333;
+    color: #e0e0e0;
     font-weight: 500;
     padding: 5px 10px;
     border-radius: 4px;
 }
 
 nav ul li a.active, nav ul li a:hover {
-    color: #007bff;
-    background-color: rgba(0, 123, 255, 0.1);
+    color: #64b5f6;
+    background-color: rgba(100, 181, 246, 0.1);
 }
 
 /* 英雄区域样式 */
 .hero {
     padding: 80px 0;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background-color: #1e1e1e;
 }
 
 .hero .container {
@@ -115,13 +115,13 @@ nav ul li a.active, nav ul li a:hover {
 .hero-content h1 {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: #ffffff;
 }
 
 .hero-content p {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     margin-bottom: 30px;
-    color: #34495e;
+    color: #b0b0b0;
 }
 
 .hero-image {
@@ -138,14 +138,14 @@ nav ul li a.active, nav ul li a:hover {
 /* 特性区域样式 */
 .features {
     padding: 80px 0;
-    background-color: white;
+    background-color: #121212;
 }
 
 .features h2 {
     text-align: center;
-    margin-bottom: 50px;
     font-size: 2rem;
-    color: #2c3e50;
+    margin-bottom: 50px;
+    color: #ffffff;
 }
 
 .feature-grid {
@@ -155,16 +155,16 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .feature-card {
-    background-color: #f8f9fa;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 30px;
-    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
 }
 
 .feature-icon {
@@ -173,21 +173,22 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .feature-card h3 {
-    margin-bottom: 15px;
-    color: #2c3e50;
+    font-size: 1.5rem;
+    margin: 20px 0 15px;
+    color: #ffffff;
 }
 
 /* 截图区域样式 */
 .screenshots {
     padding: 80px 0;
-    background-color: #f8f9fa;
+    background-color: #1a1a1a;
 }
 
 .screenshots h2 {
     text-align: center;
-    margin-bottom: 50px;
     font-size: 2rem;
-    color: #2c3e50;
+    margin-bottom: 50px;
+    color: #ffffff;
 }
 
 .screenshot-grid {
@@ -197,49 +198,48 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .screenshot {
-    text-align: center;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .screenshot img {
-    max-width: 100%;
+    width: 100%;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-}
-
-.screenshot img:hover {
-    transform: scale(1.05);
+    border: 1px solid #333;
 }
 
 .screenshot p {
+    text-align: center;
     margin-top: 15px;
     font-weight: 500;
+    color: #b0b0b0;
 }
 
 /* 行动召唤区域样式 */
 .cta {
-    padding: 80px 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 60px 0;
+    padding: 100px 0;
     text-align: center;
+    background-color: #1e1e1e;
 }
 
 .page-header h1 {
     font-size: 2.5rem;
-    margin-bottom: 15px;
+    color: #ffffff;
 }
 
 .page-header p {
     font-size: 1.2rem;
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
+    color: #b0b0b0;
 }
 
 /* 功能详情页样式 */
 .feature-details {
     padding: 80px 0;
-    background-color: white;
+    background-color: #121212;
 }
 
 .feature-item {
@@ -270,13 +270,13 @@ nav ul li a.active, nav ul li a:hover {
 .feature-text h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: #ffffff;
 }
 
 .feature-text p {
+    font-size: 1.1rem;
     margin-bottom: 20px;
-    color: #34495e;
-    line-height: 1.7;
+    color: #b0b0b0;
 }
 
 .feature-text ul {
@@ -291,16 +291,16 @@ nav ul li a.active, nav ul li a:hover {
 /* 下载页样式 */
 .download-section {
     padding: 80px 0;
-    background-color: white;
+    background-color: #1a1a1a;
 }
 
 .download-card {
-    background-color: #f8f9fa;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     text-align: center;
-    margin-bottom: 50px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .download-icon {
@@ -309,13 +309,14 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .download-card h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #2c3e50;
+    font-size: 1.8rem;
+    margin: 20px 0 15px;
+    color: #ffffff;
 }
 
 .release-date {
-    color: #7f8c8d;
+    font-size: 0.9rem;
+    color: #b0b0b0;
     margin-bottom: 20px;
 }
 
@@ -327,8 +328,9 @@ nav ul li a.active, nav ul li a:hover {
 
 .feature-list li {
     margin-bottom: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid #ecf0f1;
+    padding-left: 25px;
+    position: relative;
+    color: #b0b0b0;
 }
 
 .feature-list li:last-child {
@@ -345,14 +347,15 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .system-requirements {
-    margin-bottom: 50px;
+    margin-top: 60px;
+    text-align: left;
 }
 
 .system-requirements h3 {
-    text-align: center;
+    font-size: 1.5rem;
     margin-bottom: 30px;
-    font-size: 1.8rem;
-    color: #2c3e50;
+    text-align: center;
+    color: #ffffff;
 }
 
 .requirements-grid {
@@ -362,15 +365,15 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .requirement-item {
-    background-color: #f8f9fa;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 .requirement-item h4 {
-    margin-bottom: 10px;
-    color: #2c3e50;
+    margin-bottom: 15px;
+    color: #ffffff;
 }
 
 .installation-guide {
@@ -381,10 +384,10 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .installation-guide h3 {
-    text-align: center;
+    font-size: 1.5rem;
     margin-bottom: 30px;
-    font-size: 1.8rem;
-    color: #2c3e50;
+    text-align: center;
+    color: #ffffff;
 }
 
 .installation-guide ol {
@@ -393,28 +396,28 @@ nav ul li a.active, nav ul li a:hover {
 
 .installation-guide ol li {
     margin-bottom: 15px;
-    line-height: 1.7;
+    color: #b0b0b0;
 }
 
 /* 联系页样式 */
 .contact-section {
     padding: 80px 0;
-    background-color: white;
+    background-color: #121212;
 }
 
 .contact-info {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
     margin-bottom: 60px;
 }
 
 .contact-card {
-    background-color: #f8f9fa;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 30px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
 }
 
@@ -428,27 +431,27 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .contact-card h3 {
-    margin-bottom: 15px;
-    color: #2c3e50;
+    font-size: 1.5rem;
+    margin: 20px 0 15px;
+    color: #ffffff;
 }
 
 .contact-card p {
-    color: #34495e;
-    margin-bottom: 5px;
+    color: #b0b0b0;
 }
 
 .contact-form {
-    background-color: #f8f9fa;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 40px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .contact-form h2 {
-    text-align: center;
+    font-size: 1.8rem;
     margin-bottom: 30px;
-    font-size: 2rem;
-    color: #2c3e50;
+    text-align: center;
+    color: #ffffff;
 }
 
 .form-group {
@@ -459,54 +462,55 @@ nav ul li a.active, nav ul li a:hover {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #2c3e50;
+    color: #e0e0e0;
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
+    padding: 12px;
+    border: 1px solid #333;
     border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    font-family: inherit;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-    border-color: #007bff;
     outline: none;
+    border-color: #64b5f6;
 }
 
 .faq-section {
     padding: 80px 0;
-    background-color: #f8f9fa;
+    background-color: #1a1a1a;
 }
 
 .faq-section h2 {
     text-align: center;
-    margin-bottom: 50px;
     font-size: 2rem;
-    color: #2c3e50;
+    margin-bottom: 50px;
+    color: #ffffff;
 }
 
 .faq-item {
-    background-color: white;
+    background-color: #1e1e1e;
     border-radius: 8px;
     padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 .faq-item h3 {
-    margin-bottom: 15px;
-    color: #2c3e50;
     font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #ffffff;
 }
 
 .faq-item p {
-    color: #34495e;
-    line-height: 1.7;
+    color: #b0b0b0;
 }
 
 /* 响应式设计补充 */
@@ -535,16 +539,16 @@ nav ul li a.active, nav ul li a:hover {
 
 /* 页脚样式 */
 footer {
-    background-color: #2c3e50;
-    color: white;
-    padding: 60px 0 30px;
+    background-color: #1a1a1a;
+    padding: 60px 0 20px;
+    color: #b0b0b0;
 }
 
 .footer-content {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
 }
 
 .footer-logo {
@@ -560,7 +564,7 @@ footer {
 
 .footer-links h4, .footer-contact h4 {
     margin-bottom: 20px;
-    font-size: 1.2rem;
+    color: #ffffff;
 }
 
 .footer-links ul {
@@ -572,19 +576,18 @@ footer {
 }
 
 .footer-links ul li a {
-    color: #ecf0f1;
+    color: #b0b0b0;
 }
 
 .footer-links ul li a:hover {
-    color: #3498db;
+    color: #64b5f6;
 }
 
 .copyright {
     text-align: center;
-    padding-top: 30px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.9rem;
-    color: #bdc3c7;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    color: #808080;
 }
 
 /* 响应式设计 */
@@ -614,7 +617,7 @@ footer {
     width: 100%;
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .carousel-container {
@@ -653,12 +656,13 @@ footer {
 }
 
 .carousel-control {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(30, 30, 30, 0.7);
+    color: #ffffff;
     border: none;
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -667,7 +671,7 @@ footer {
 }
 
 .carousel-control:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(30, 30, 30, 0.9);
 }
 
 .carousel-indicators {
@@ -676,14 +680,15 @@ footer {
 }
 
 .carousel-indicator {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.3);
+    margin: 0 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .carousel-indicator.active {
-    background-color: white;
+    background-color: #64b5f6;
 }
