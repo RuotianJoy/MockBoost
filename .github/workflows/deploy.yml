@@ -21,6 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install openai # 安装 openai 模块
+          pip install aliyunsdkcore
 
       - name: 设置环境变量
         run: echo "API_KEY=${{ secrets.DEEPSEEKKEY }}" >> $GITHUB_ENV
