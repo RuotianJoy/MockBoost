@@ -20,30 +20,25 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install openai # 安装 openai 模块
-          pip install pycryptodome
-          pip install aliyunsdkcore
+          pip install openai
+          pip install aliyun-python-sdk-core==2.15.1
 
       - name: 设置环境变量
-        run: echo "API_KEY=${{ secrets.DEEPSEEKKEY }}" >> $GITHUB_ENV
-
-      - name: 设置环境变量
-        run: echo "API_KEY_ali=${{ secrets.ALIKEY }}" >> $GITHUB_ENV
+        run: |
+          echo "API_KEY=${{ secrets.DEEPSEEKKEY }}" >> $GITHUB_ENV
+          echo "API_KEY_ALI=${{ secrets.ALIKEY }}" >> $GITHUB_ENV
 
       - name: 检查 API_KEY 是否正确加载
         run: echo "API_KEY is set to $API_KEY"
         env:
           API_KEY: ${{ secrets.DEEPSEEKKEY }}
 
-
-      - name: 运行 Python 脚本
+      - name: 运行 DeepSeekApi.py
         run: python WebSite/DeepSeek/DeepSeekApi.py
-
         env:
           API_KEY: ${{ secrets.DEEPSEEKKEY }}
 
-      - name: 运行 Python 脚本
+      - name: 运行 app.py
         run: python WebSite/app.py
-
         env:
           API_KEY: ${{ secrets.ALIKEY }}
