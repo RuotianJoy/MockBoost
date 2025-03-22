@@ -21,7 +21,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install openai flask flask-cors redis
-          pip3 install PyAudio
           pip install aliyun-python-sdk-core==2.15.1
 
       - name: 设置环境变量
