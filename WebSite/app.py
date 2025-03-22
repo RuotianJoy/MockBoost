@@ -7,12 +7,7 @@ import json
 import uuid
 import redis
 import time
-import pyaudio
-import websocket
-import threading
-import base64
-import tempfile
-# Add parent directory to Python path for importing project modules
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db.controller.UserServerController import UserServerController
