@@ -7,14 +7,20 @@ import json
 import uuid
 import redis
 import time
-
+import pyaudio
+import websocket
+import threading
+import base64
+import tempfile
 # Add parent directory to Python path for importing project modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db.controller.UserServerController import UserServerController
 from DeepSeek.DeepSeekApi import get_llm_response
 from Email.get_email_api import send_email
-
+from ASR.baidu_asr import BaiduASR
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
 app = Flask(__name__)
 CORS(app)
 
@@ -374,6 +380,7 @@ def chat():
             'conversation_id': conversation_id
         })
 
+
 @app.route('/clear-chat', methods=['POST'])
 def clear_chat():
     data = request.json
@@ -581,6 +588,61 @@ def check_redis_connection():
     """在每个请求前检查Redis连接"""
     if request.endpoint in ['chat', 'chat_history']:  # 只在需要Redis的路由中检查
         test_redis_connection()
+
+@app.route('/get-tts-token', methods=['GET'])
+def get_tts_token():
+    try:
+        print("Getting TTS token from Aliyun...")
+        # 创建AcsClient实例
+        api_key = os.getenv("API_KEY_ali")
+        if not api_key:
+            raise ValueError("API_KEY is not set")
+        client = AcsClient(
+            "LTAI5tNTwR6WS7wQuRV7LJ6X",
+            api_key,
+            "cn-shanghai"
+        )
+
+        # 创建request，并设置参数
+        request = CommonRequest()
+        request.set_method('POST')
+        request.set_domain('nls-meta.cn-shanghai.aliyuncs.com')
+        request.set_version('2019-02-28')
+        request.set_action_name('CreateToken')
+
+        print("Sending token request to Aliyun...")
+        response = client.do_action_with_exception(request)
+        response_str = response.decode('utf-8')
+        print(f"Aliyun response: {response_str}")
+        
+        response_json = json.loads(response_str)
+        
+        if 'Token' in response_json and 'Id' in response_json['Token']:
+            token = response_json['Token']['Id']
+            expire_time = response_json['Token']['ExpireTime']
+            
+            print(f"Successfully obtained token: {token} (expires: {expire_time})")
+            return jsonify({
+                'success': True,
+                'token': token,
+                'expire_time': expire_time,
+                'appkey': 'Fs8yrx1nEz5CQJEr'  # Return the app key as well
+            })
+        else:
+            print(f"Failed to get token, response does not contain Token/Id: {response_json}")
+            return jsonify({
+                'success': False,
+                'message': 'Failed to get token from Aliyun',
+                'response': response_json
+            })
+    except Exception as e:
+        error_msg = str(e)
+        print(f"Error getting TTS token: {error_msg}")
+        return jsonify({
+            'success': False,
+            'message': error_msg,
+            'error_type': type(e).__name__
+        })
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

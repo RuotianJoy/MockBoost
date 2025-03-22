@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
     const chatMessages = document.getElementById('chatMessages');
-    const messageInput = document.getElementById('messageInput');
+    let messageInput = document.getElementById('messageInput');
     const sendMessageBtn = document.getElementById('sendMessage');
     const startInterviewBtn = document.getElementById('startInterviewBtn');
     const clearChatBtn = document.getElementById('clearChatBtn');
@@ -15,6 +15,463 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeHistoryBtn = document.getElementById('closeHistoryBtn');
     const startVoiceBtn = document.getElementById('startVoice');
     const backToHomeBtn = document.getElementById('backToHomeFromConversation');
+    
+    // Import PCMAudioPlayer from audio_player.js
+    let audioPlayer;
+    import('/static/js/audio_player.js')
+        .then(module => {
+            const PCMAudioPlayer = module.default;
+            audioPlayer = new PCMAudioPlayer(24000); // 24000 Hz sample rate
+            console.log('PCMAudioPlayer loaded successfully');
+        })
+        .catch(error => {
+            console.error('Failed to load PCMAudioPlayer:', error);
+        });
+    
+    // Aliyun TTS WebSocket variables
+    let ttsToken = null;
+    let ttsAppKey = null;
+    let ttsWebSocket = null;
+    let isPlayingAudio = false;
+    let audioQueue = [];
+    let currentTaskId = null;
+    let isSynthesisStarted = false;
+    let processedMessages = new Set(); // Track messages that have already been processed for TTS
+    
+    // Initialize TTS
+    initTTS();
+    
+    /**
+     * 生成32位随机字符串
+     */
+    function generateUUID() {
+        let d = new Date().getTime();
+        let d2 = (performance && performance.now && (performance.now()*1000)) || 0;
+        return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            let r = Math.random() * 16;
+            if(d > 0){
+                r = (d + r)%16 | 0;
+                d = Math.floor(d/16);
+            } else {
+                r = (d2 + r)%16 | 0;
+                d2 = Math.floor(d2/16);
+            }
+            return (c == 'x' ? r :(r&0x3|0x8)).toString(16);
+        });
+    }
+    
+    /**
+     * 生成 WebSocket 消息的头部信息
+     */
+    function getHeader(name) {
+        return {
+            message_id: generateUUID(),
+            task_id: currentTaskId,
+            namespace: 'FlowingSpeechSynthesizer',
+            name: name,
+            appkey: ttsAppKey
+        };
+    }
+    
+    // Initialize TTS functionality by getting token
+    async function initTTS() {
+        try {
+            console.log('===== TTS API Initialization =====');
+            console.log('Requesting new TTS token from server...');
+            // Get TTS token from server
+            const response = await fetch('/get-tts-token', {
+                method: 'GET'
+            });
+            
+            const data = await response.json();
+            if (data.success && data.token) {
+                ttsToken = data.token;
+                ttsAppKey = data.appkey || "LRPVa0X9S1KqjOK3"; // Use provided appkey or fallback
+                console.log(`TTS Token obtained successfully: ${ttsToken.substring(0, 8)}...`);
+                console.log(`TTS AppKey: ${ttsAppKey}`);
+                console.log('===================================');
+                return true;
+            } else {
+                console.error('===== TTS API Initialization Error =====');
+                console.error('Failed to get TTS token:', data.message);
+                if (data.response) {
+                    console.error('Server response:', data.response);
+                }
+                console.error('=======================================');
+                return false;
+            }
+        } catch (error) {
+            console.error('===== TTS API Initialization Error =====');
+            console.error('Error initializing TTS:', error);
+            console.error('=======================================');
+            return false;
+        }
+    }
+    
+    // Function to play text using TTS
+    function playTTS(text, messageId) {
+        // If this message has already been processed, skip it
+        if (processedMessages.has(messageId)) {
+            console.log('Message already processed for TTS, skipping:', messageId);
+            return;
+        }
+        
+        // Mark this message as processed
+        processedMessages.add(messageId);
+        
+        if (!ttsToken) {
+            console.error('TTS not initialized properly');
+            // Try to re-initialize TTS
+            initTTS().then(() => {
+                if (ttsToken && audioPlayer) {
+                    // If initialization was successful, add to queue
+                    audioQueue.push({text, messageId});
+                    if (!isPlayingAudio) {
+                        processAudioQueue();
+                    }
+                }
+            });
+            return;
+        }
+        
+        // Add to queue with messageId
+        audioQueue.push({text, messageId});
+        
+        // If not currently playing, start playing
+        if (!isPlayingAudio) {
+            processAudioQueue();
+        }
+    }
+    
+    // Process and play audio queue
+    function processAudioQueue() {
+        if (audioQueue.length === 0) {
+            isPlayingAudio = false;
+            return;
+        }
+        
+        isPlayingAudio = true;
+        const {text, messageId} = audioQueue.shift();
+        
+        // Connect the audio player
+        if (audioPlayer) {
+            audioPlayer.connect();
+            //setTimeout(5000);
+            audioPlayer.stop(); // Stop any current playback
+        } else {
+            console.error('Audio player not available');
+            isPlayingAudio = false;
+            return;
+        }
+        
+        startSynthesis(text);
+    }
+    
+    // Start a new synthesis session
+    function startSynthesis(text) {
+        // Clean text for better handling
+        const cleanedText = text.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+        
+        // Close any existing connection
+        if (ttsWebSocket && ttsWebSocket.readyState === WebSocket.OPEN) {
+            console.log('Closing existing WebSocket connection');
+            ttsWebSocket.close();
+        }
+        
+        // Create a new connection
+        const url = `wss://nls-gateway.cn-shanghai.aliyuncs.com/ws/v1?token=${ttsToken}`;
+        console.log("======= TTS API Connection Info =======");
+        console.log("Connecting to TTS API URL:", url);
+        console.log("AppKey:", ttsAppKey);
+        console.log("Text to synthesize:", cleanedText.substring(0, 50) + (cleanedText.length > 50 ? '...' : ''));
+        console.log("Original text length:", text.length, "characters");
+        console.log("Cleaned text length:", cleanedText.length, "characters");
+        console.log("=======================================");
+        
+        ttsWebSocket = new WebSocket(url);
+        ttsWebSocket.binaryType = "arraybuffer";
+        
+        // Generate a new task ID for this session
+        currentTaskId = generateUUID();
+        console.log('Generated taskId:', currentTaskId);
+        isSynthesisStarted = false;
+        
+        ttsWebSocket.onopen = function() {
+            console.log('TTS WebSocket connected, sending StartSynthesis');
+            
+            const params = {
+                header: getHeader('StartSynthesis'),
+                payload: {
+                    voice: 'zhixiaoxia',
+                    format: 'wav',
+                    sample_rate: 24000,
+                    volume: 100,
+                    speech_rate: 0,
+                    pitch_rate: 0,
+                    enable_subtitle: false,
+                    platform: 'javascript'
+                }
+            };
+            
+            console.log('===== TTS API Request: StartSynthesis =====');
+            console.log(JSON.stringify(params, null, 2));
+            console.log('===========================================');
+            
+            ttsWebSocket.send(JSON.stringify(params));
+        };
+        
+        ttsWebSocket.onmessage = function(event) {
+            const data = event.data;
+            
+            // Handle binary audio data
+            if (data instanceof ArrayBuffer) {
+                console.log(`Received binary audio data: ${data.byteLength} bytes`);
+                if (audioPlayer) {
+                    audioPlayer.pushPCM(data);
+                }
+            } 
+            // Handle text messages
+            else {
+                try {
+                    const body = JSON.parse(data);
+                    
+                    console.log('===== TTS API Response =====');
+                    console.log('Header:', body.header);
+                    if (body.payload) {
+                        console.log('Payload:', body.payload);
+                    }
+                    console.log('=============================');
+                    
+                    // Handle SynthesisStarted
+                    if (body.header.name === 'SynthesisStarted' && body.header.status === 20000000) {
+                        console.log('TTS synthesis started successfully, sending text to synthesize');
+                        isSynthesisStarted = true;
+                        // Send the text to synthesize - already cleaned in startSynthesis
+                        sendRunSynthesis(text);
+                    }
+                    
+                    // Handle SynthesisCompleted
+                    if (body.header.name === 'SynthesisCompleted' && body.header.status === 20000000) {
+                        console.log('TTS synthesis completed successfully');
+                        
+                        // Close the WebSocket
+                        if (ttsWebSocket) {
+                            ttsWebSocket.close();
+                            ttsWebSocket = null;
+                        }
+                        
+                        // Reset state and process next in queue
+                        isSynthesisStarted = false;
+                        
+                        // Wait for audio to finish playing before processing next item
+                        setTimeout(() => {
+                            isPlayingAudio = false;
+                            processAudioQueue();
+                        }, 1000);
+                    }
+                    
+                    // Handle any errors
+                    if (body.header.status && body.header.status !== 20000000) {
+                        console.error('TTS error:', body);
+                        
+                        // Clean up and move on to next item
+                        if (ttsWebSocket) {
+                            ttsWebSocket.close();
+                            ttsWebSocket = null;
+                        }
+                        
+                        // Reset state and process next in queue
+                        isSynthesisStarted = false;
+                        setTimeout(() => {
+                            isPlayingAudio = false;
+                            processAudioQueue();
+                        }, 500);
+                    }
+                } catch (error) {
+                    console.error('Error parsing TTS message:', error);
+                }
+            }
+        };
+        
+        ttsWebSocket.onerror = function(error) {
+            console.error('TTS WebSocket error:', error);
+            
+            // Clean up and try again
+            if (ttsWebSocket) {
+                ttsWebSocket.close();
+                ttsWebSocket = null;
+            }
+            
+            // Try to refresh token and retry
+            initTTS().then(() => {
+                // Re-add current text to the queue with a new ID (since the original failed)
+                if (text) {
+                    // Use a temporary ID for retry purposes
+                    const retryId = generateUUID();
+                    audioQueue.unshift({text, messageId: retryId});
+                }
+                
+                setTimeout(() => {
+                    isPlayingAudio = false;
+                    processAudioQueue();
+                }, 2000);
+            });
+        };
+        
+        ttsWebSocket.onclose = function(event) {
+            console.log(`TTS WebSocket closed with code: ${event.code}, reason: ${event.reason}`);
+        };
+    }
+    
+    // Send RunSynthesis command to synthesize text
+    function sendRunSynthesis(text) {
+        if (ttsWebSocket && isSynthesisStarted) {
+            // Remove all newlines/carriage returns and normalize whitespace
+            const cleanedText = text.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+            
+            console.log('Sending RunSynthesis with text:', cleanedText);
+            
+            const params = {
+                header: getHeader('RunSynthesis'),
+                payload: {
+                    text: cleanedText
+                }
+            };
+            
+            console.log('===== TTS API Request: RunSynthesis =====');
+            console.log(JSON.stringify(params, null, 2));
+            console.log('Original text length:', text.length, 'characters');
+            console.log('Cleaned text length:', cleanedText.length, 'characters');
+            console.log('===========================================');
+            
+            ttsWebSocket.send(JSON.stringify(params));
+            
+            // Immediately send StopSynthesis to indicate end of text stream
+            setTimeout(() => {
+                sendStopSynthesis();
+            }, 100); // Small delay to ensure RunSynthesis is processed first
+        } else {
+            console.error('Cannot send RunSynthesis: WebSocket not ready or synthesis not started');
+        }
+    }
+    
+    // Send StopSynthesis command
+    function sendStopSynthesis() {
+        if (ttsWebSocket && isSynthesisStarted) {
+            console.log('Sending StopSynthesis command to indicate end of text stream');
+            
+            const params = {
+                header: getHeader('StopSynthesis')
+            };
+            
+            console.log('===== TTS API Request: StopSynthesis =====');
+            console.log(JSON.stringify(params, null, 2));
+            console.log('============================================');
+            
+            ttsWebSocket.send(JSON.stringify(params));
+            
+            // Log completion
+            console.log('Text stream ended, waiting for synthesis to complete...');
+        } else {
+            console.warn('Cannot send StopSynthesis: WebSocket not ready or synthesis not started');
+        }
+    }
+    
+    // Add message to chat
+    function addMessage(message, sender) {
+        const messageId = generateUUID(); // Generate a unique ID for this message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender === 'user' ? 'user-message' : 'bot-message'}`;
+        messageDiv.textContent = message;
+        messageDiv.dataset.messageId = messageId; // Store the message ID in the DOM element
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 10);
+        
+        // Play TTS for bot messages
+        if (sender === 'bot') {
+            playTTS(message, messageId);
+        }
+    }
+    
+    // Configure the message input to support multi-line text
+    if (messageInput) {
+        // Check if the input is a textarea
+        if (messageInput.tagName.toLowerCase() === 'textarea') {
+            // Already a textarea, ensure it has auto-height behavior
+            messageInput.style.resize = 'none'; // Disable manual resize
+            messageInput.style.overflowY = 'hidden'; // Hide vertical scrollbar
+            
+            // Function to adjust height based on content
+            const adjustHeight = () => {
+                messageInput.style.height = 'auto';
+                messageInput.style.height = messageInput.scrollHeight + 'px';
+                
+                // Ensure full width
+                messageInput.style.width = '100%';
+                messageInput.style.boxSizing = 'border-box';
+                
+                // Force recalculation if needed
+                const parentWidth = messageInput.parentNode.clientWidth;
+                if (parentWidth > 0) {
+                    messageInput.style.maxWidth = (parentWidth - 10) + 'px';
+                }
+            };
+            
+            // Add event listeners for auto-height
+            messageInput.addEventListener('input', adjustHeight);
+            messageInput.addEventListener('change', adjustHeight);
+            
+            // Initial height adjustment
+            setTimeout(adjustHeight, 0);
+        } else {
+            // If it's an input element, replace it with a textarea
+            const parent = messageInput.parentNode;
+            const newTextarea = document.createElement('textarea');
+            
+            // Copy attributes
+            Array.from(messageInput.attributes).forEach(attr => {
+                newTextarea.setAttribute(attr.name, attr.value);
+            });
+            
+            // Set additional styles for textarea
+            newTextarea.style.resize = 'none';
+            newTextarea.style.overflowY = 'hidden';
+            newTextarea.style.height = messageInput.offsetHeight + 'px';
+            newTextarea.style.width = '100%'; // Make the textarea take full width
+            newTextarea.style.boxSizing = 'border-box'; // Include padding in width calculation
+            newTextarea.style.padding = '8px 12px'; // Add some padding
+            newTextarea.style.borderRadius = '4px'; // Round corners
+            newTextarea.rows = 1;
+            
+            // Replace input with textarea
+            parent.replaceChild(newTextarea, messageInput);
+            messageInput = newTextarea;
+            
+            // Add auto-resize capability
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+                
+                // Force recalculation of parent container if needed
+                const parentWidth = this.parentNode.clientWidth;
+                if (parentWidth > 0) {
+                    this.style.maxWidth = (parentWidth - 10) + 'px'; // Small buffer for margins
+                }
+            });
+            
+            // Handle Enter key for sending message
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+    }
     
     // Get user ID from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -182,6 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const messageDiv = document.createElement('div');
                         messageDiv.className = `message ${msg.role === 'user' ? 'user-message' : 'bot-message'}`;
                         messageDiv.textContent = msg.content;
+                        messageDiv.dataset.messageId = generateUUID(); // Add ID but don't trigger TTS for history
                         historyChatContent.appendChild(messageDiv);
                     });
                 } else {
@@ -265,19 +723,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 addMessage(getFallbackQuestion(jobInput.value.trim()), 'bot');
             }
         });
-    }
-    
-    // Add message to chat
-    function addMessage(message, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender === 'user' ? 'user-message' : 'bot-message'}`;
-        messageDiv.textContent = message;
-        chatMessages.appendChild(messageDiv);
-        
-        // Scroll to bottom
-        setTimeout(() => {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 10);
     }
     
     // Start interview
@@ -496,10 +941,192 @@ I'd like to start by asking you about your background and experience in this fie
         });
     }
     
-    // Voice input (placeholder - actual implementation would require additional setup)
+    // Voice input implementation
+    let mediaRecorder = null;
+    let audioContext = null;
+    let audioProcessor = null;
+    let audioStream = null;
+    let isRecording = false;
+    let ws = null;
+    // Track voice recognition state
+    let priorInputText = '';
+    let currentPartialText = '';
+
+    // Constants for Baidu ASR API
+    const APPID = 118057093;
+    const API_KEY = "8GKydTmb9V6iVlyMGk3BEmym";
+    const DEV_PID = 17372; 
+    const CUID = "cuid-" + userId;
+    const FORMAT = "pcm";
+    const SAMPLE_RATE = 16000;
+
+    // Start/Stop voice recording
     if (startVoiceBtn) {
-        startVoiceBtn.addEventListener('click', function() {
-            alert('Voice input feature is not implemented in this version.');
+        startVoiceBtn.addEventListener('click', async function() {
+            if (!isRecording) {
+                try {
+                    // Request microphone access
+                    audioStream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        } 
+                    });
+                    
+                    // Create WebSocket connection
+                    const sn = crypto.randomUUID();
+                    ws = new WebSocket(`wss://vop.baidu.com/realtime_asr?sn=${sn}`);
+                    
+                    // Initialize audio context
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: SAMPLE_RATE
+                    });
+                    
+                    // Create source from the microphone stream
+                    const source = audioContext.createMediaStreamSource(audioStream);
+                    
+                    // Create script processor for audio processing
+                    audioProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+                    
+                    // Connect the audio processing pipeline
+                    source.connect(audioProcessor);
+                    audioProcessor.connect(audioContext.destination);
+                    
+                    // Set up WebSocket handlers
+                    ws.onopen = function() {
+                        console.log('WebSocket connected');
+                        // Send start parameters
+                        const startData = {
+                            "type": "START",
+                            "data": {
+                                "appid": APPID,
+                                "appkey": API_KEY,
+                                "dev_pid": DEV_PID,
+                                "cuid": CUID,
+                                "format": FORMAT,
+                                "sample": SAMPLE_RATE
+                            }
+                        };
+                        ws.send(JSON.stringify(startData));
+                    };
+                    
+                    ws.onmessage = function(event) {
+                        try {
+                            const result = JSON.parse(event.data);
+                            
+                            if (result.type === "MID_TEXT") {
+                                // Real-time recognition result
+                                currentPartialText = result.result || '';
+                                // Update input field with original text + current recognition
+                                messageInput.value = priorInputText + currentPartialText;
+                            } 
+                            else if (result.type === "FIN_TEXT") {
+                                // Final recognition result
+                                const finalText = result.result || result.err_msg || '';
+                                
+                                // Replace the partial text with the final result
+                                messageInput.value = priorInputText + finalText;
+                                
+                                // Update priorInputText to include this final result for next voice segment
+                                priorInputText = messageInput.value;
+                                currentPartialText = '';
+                            }
+                        } catch (e) {
+                            console.error('Error parsing message:', e);
+                        }
+                    };
+                    
+                    ws.onerror = function(error) {
+                        console.error('WebSocket error:', error);
+                        alert('Voice recognition error. Please try again.');
+                    };
+                    
+                    ws.onclose = function() {
+                        console.log('WebSocket closed');
+                    };
+                    
+                    // Process and send audio data
+                    audioProcessor.onaudioprocess = function(e) {
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            // Get audio data from the input channel
+                            const inputData = e.inputBuffer.getChannelData(0);
+                            
+                            // Convert Float32Array to Int16Array for PCM
+                            const pcmData = new Int16Array(inputData.length);
+                            for (let i = 0; i < inputData.length; i++) {
+                                // Convert float audio data (-1.0 to 1.0) to int16 (-32768 to 32767)
+                                pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+                            }
+                            
+                            // Send the PCM data to the WebSocket
+                            ws.send(pcmData.buffer);
+                        }
+                    };
+                    
+                    // Store the current input text before we start appending voice results
+                    priorInputText = messageInput.value;
+                    currentPartialText = '';
+                    
+                    isRecording = true;
+                    startVoiceBtn.innerHTML = '<i class="fas fa-stop-circle"></i>';
+                    startVoiceBtn.classList.add('recording');
+                    
+                } catch (error) {
+                    console.error('Error starting voice input:', error);
+                    alert('Failed to start voice input. Please check your microphone permissions.');
+                }
+            } else {
+                // Stop recording and clean up
+                stopVoiceRecording();
+            }
         });
     }
-}); 
+    
+    // Function to stop voice recording and clean up resources
+    function stopVoiceRecording() {
+        // Disconnect and close audio processing
+        if (audioProcessor) {
+            audioProcessor.disconnect();
+            audioProcessor = null;
+        }
+        
+        // Close audio context
+        if (audioContext) {
+            audioContext.close().then(() => {
+                console.log('Audio context closed');
+            });
+            audioContext = null;
+        }
+        
+        // Stop all audio tracks
+        if (audioStream) {
+            audioStream.getTracks().forEach(track => track.stop());
+            audioStream = null;
+        }
+        
+        // Send end frame and close WebSocket
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            const endData = { "type": "END" };
+            ws.send(JSON.stringify(endData));
+            
+            // Update the prior text to include whatever is currently in the input box
+            priorInputText = messageInput.value;
+            currentPartialText = '';
+            
+            setTimeout(() => {
+                if (ws) ws.close();
+                ws = null;
+            }, 1000); // Give some time for the server to respond with final results
+        }
+        
+        isRecording = false;
+        startVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        startVoiceBtn.classList.remove('recording');
+    }
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', function() {
+        stopVoiceRecording();
+    });
+});
