@@ -7,6 +7,19 @@ from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import torch
+from pytorch3d.io import load_objs_as_meshes
+from pytorch3d.renderer import (
+    look_at_view_transform,
+    FoVPerspectiveCameras,
+    PointLights,
+    RasterizationSettings,
+    MeshRenderer,
+    MeshRasterizer,
+    SoftPhongShader,
+)
+from pytorch3d.structures import Meshes
+import matplotlib.pyplot as plt
 
 class ObjRenderer(QOpenGLWidget):
     def __init__(self, parent=None):
@@ -56,7 +69,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('PyQt6 OBJ Renderer')
 
         self.renderer = ObjRenderer(self)
-        self.renderer.load_obj('D:\\Project\\MockBoost\\Frame\\rp_mei_posed_001_30k.obj')  # 指定您的 OBJ 文件路径
+        self.renderer.load_obj('D:\\Project\\MockBoost\\Frame\\objmodel\\rp_mei_posed_001_30k.obj')  # 指定您的 OBJ 文件路径
 
         layout = QVBoxLayout()
         layout.addWidget(self.renderer)
@@ -77,5 +90,46 @@ if __name__ == '__main__':
     window = MainWindow()
     window.resize(800, 600)
     window.show()
+
+    # Set the device
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    # Load the 3D model
+    obj_filename = "D:\\Project\\MockBoost\\Frame\\objmodel\\rp_mei_posed_001_30k.obj"
+    mesh = load_objs_as_meshes([obj_filename], device=device)
+
+    # Initialize a camera
+    R, T = look_at_view_transform(2.7, 0, 180)  # distance, elevation, azimuth
+    cameras = FoVPerspectiveCameras(device=device, R=R, T=T)
+
+    # Define the settings for rasterization and shading
+    raster_settings = RasterizationSettings(
+        image_size=512,
+        blur_radius=0.0,
+        faces_per_pixel=1,
+    )
+
+    # Place a point light in front of the object
+    lights = PointLights(device=device, location=[[2.0, 2.0, -2.0]])
+
+    # Create a phong renderer by composing a rasterizer and a shader
+    renderer = MeshRenderer(
+        rasterizer=MeshRasterizer(
+            cameras=cameras,
+            raster_settings=raster_settings
+        ),
+        shader=SoftPhongShader(
+            device=device,
+            cameras=cameras,
+            lights=lights
+        )
+    )
+
+    # Render the image
+    images = renderer(mesh)
+    plt.figure(figsize=(10, 10))
+    plt.imshow(images[0, ..., :3].cpu().numpy())
+    plt.axis("off")
+    plt.show()
 
     sys.exit(app.exec())
