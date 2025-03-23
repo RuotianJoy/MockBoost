@@ -954,6 +954,8 @@ I'd like to start by asking you about your background and experience in this fie
     // Track voice recognition state
     let priorInputText = '';
     let currentPartialText = '';
+    let voiceReconnectAttempts = 0;
+    const MAX_RECONNECT_ATTEMPTS = 3;
 
     // Constants for Baidu ASR API
     const APPID = 118057093;
@@ -977,95 +979,11 @@ I'd like to start by asking you about your background and experience in this fie
                         } 
                     });
                     
-                    // Create WebSocket connection
-                    const sn = crypto.randomUUID();
-                    ws = new WebSocket(`wss://vop.baidu.com/realtime_asr?sn=${sn}`);
+                    // Reset reconnect attempts when starting a new recording
+                    voiceReconnectAttempts = 0;
                     
-                    // Initialize audio context
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)({
-                        sampleRate: SAMPLE_RATE
-                    });
-                    
-                    // Create source from the microphone stream
-                    const source = audioContext.createMediaStreamSource(audioStream);
-                    
-                    // Create script processor for audio processing
-                    audioProcessor = audioContext.createScriptProcessor(4096, 1, 1);
-                    
-                    // Connect the audio processing pipeline
-                    source.connect(audioProcessor);
-                    audioProcessor.connect(audioContext.destination);
-                    
-                    // Set up WebSocket handlers
-                    ws.onopen = function() {
-                        console.log('WebSocket connected');
-                        // Send start parameters
-                        const startData = {
-                            "type": "START",
-                            "data": {
-                                "appid": APPID,
-                                "appkey": API_KEY,
-                                "dev_pid": DEV_PID,
-                                "cuid": CUID,
-                                "format": FORMAT,
-                                "sample": SAMPLE_RATE
-                            }
-                        };
-                        ws.send(JSON.stringify(startData));
-                    };
-                    
-                    ws.onmessage = function(event) {
-                        try {
-                            const result = JSON.parse(event.data);
-                            
-                            if (result.type === "MID_TEXT") {
-                                // Real-time recognition result
-                                currentPartialText = result.result || '';
-                                // Update input field with original text + current recognition
-                                messageInput.value = priorInputText + currentPartialText;
-                            } 
-                            else if (result.type === "FIN_TEXT") {
-                                // Final recognition result
-                                const finalText = result.result || result.err_msg || '';
-                                
-                                // Replace the partial text with the final result
-                                messageInput.value = priorInputText + finalText;
-                                
-                                // Update priorInputText to include this final result for next voice segment
-                                priorInputText = messageInput.value;
-                                currentPartialText = '';
-                            }
-                        } catch (e) {
-                            console.error('Error parsing message:', e);
-                        }
-                    };
-                    
-                    ws.onerror = function(error) {
-                        console.error('WebSocket error:', error);
-                        alert('Voice recognition error. Please try again.');
-                    };
-                    
-                    ws.onclose = function() {
-                        console.log('WebSocket closed');
-                    };
-                    
-                    // Process and send audio data
-                    audioProcessor.onaudioprocess = function(e) {
-                        if (ws && ws.readyState === WebSocket.OPEN) {
-                            // Get audio data from the input channel
-                            const inputData = e.inputBuffer.getChannelData(0);
-                            
-                            // Convert Float32Array to Int16Array for PCM
-                            const pcmData = new Int16Array(inputData.length);
-                            for (let i = 0; i < inputData.length; i++) {
-                                // Convert float audio data (-1.0 to 1.0) to int16 (-32768 to 32767)
-                                pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-                            }
-                            
-                            // Send the PCM data to the WebSocket
-                            ws.send(pcmData.buffer);
-                        }
-                    };
+                    // Initialize WebSocket connection
+                    initializeVoiceRecognition();
                     
                     // Store the current input text before we start appending voice results
                     priorInputText = messageInput.value;
@@ -1086,44 +1004,221 @@ I'd like to start by asking you about your background and experience in this fie
         });
     }
     
-    // Function to stop voice recording and clean up resources
-    function stopVoiceRecording() {
-        // Disconnect and close audio processing
+    // Initialize WebSocket connection for voice recognition
+    function initializeVoiceRecognition() {
+        try {
+            // Create WebSocket connection
+            const sn = crypto.randomUUID();
+            ws = new WebSocket(`wss://vop.baidu.com/realtime_asr?sn=${sn}`);
+            
+            // Initialize audio context
+            audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                sampleRate: SAMPLE_RATE
+            });
+            
+            // Create source from the microphone stream
+            const source = audioContext.createMediaStreamSource(audioStream);
+            
+            // Create script processor for audio processing
+            audioProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+            
+            // Connect the audio processing pipeline
+            source.connect(audioProcessor);
+            audioProcessor.connect(audioContext.destination);
+            
+            // Set up WebSocket handlers
+            ws.onopen = function() {
+                console.log('WebSocket connected');
+                // Send start parameters
+                const startData = {
+                    "type": "START",
+                    "data": {
+                        "appid": APPID,
+                        "appkey": API_KEY,
+                        "dev_pid": DEV_PID,
+                        "cuid": CUID,
+                        "format": FORMAT,
+                        "sample": SAMPLE_RATE
+                    }
+                };
+                ws.send(JSON.stringify(startData));
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const result = JSON.parse(event.data);
+                    
+                    if (result.type === "MID_TEXT") {
+                        // Real-time recognition result
+                        currentPartialText = result.result || '';
+                        // Update input field with original text + current recognition
+                        messageInput.value = priorInputText + currentPartialText;
+                    } 
+                    else if (result.type === "FIN_TEXT") {
+                        // Final recognition result
+                        const finalText = result.result || '';
+                        
+                        // Handle error message
+                        if (result.err_msg && result.err_msg.includes("find effective speech")) {
+                            console.log("ASR server didn't find effective speech, error:", result.err_msg);
+                            
+                            // Don't add error messages to the input field
+                            if (finalText === '') {
+                                // Try to reconnect if we haven't exceeded max attempts
+                                if (isRecording && voiceReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                                    voiceReconnectAttempts++;
+                                    console.log(`Reconnecting ASR (attempt ${voiceReconnectAttempts})...`);
+                                    
+                                    // Clean up existing connection
+                                    cleanupVoiceConnection();
+                                    
+                                    // Re-initialize after a short delay
+                                    setTimeout(() => {
+                                        if (isRecording) {
+                                            initializeVoiceRecognition();
+                                        }
+                                    }, 500);
+                                    
+                                    return;
+                                }
+                            }
+                        } else {
+                            // Reset reconnection counter on successful speech recognition
+                            voiceReconnectAttempts = 0;
+                        }
+                        
+                        // Replace the partial text with the final result (only if it's not an error)
+                        if (finalText && !finalText.includes("[info:-4]")) {
+                            messageInput.value = priorInputText + finalText;
+                            
+                            // Update priorInputText to include this final result for next voice segment
+                            priorInputText = messageInput.value;
+                            currentPartialText = '';
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing message:', e);
+                }
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                
+                // Try to reconnect on error if still recording
+                if (isRecording && voiceReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    voiceReconnectAttempts++;
+                    console.log(`WebSocket error occurred. Reconnecting (attempt ${voiceReconnectAttempts})...`);
+                    
+                    // Clean up existing connection
+                    cleanupVoiceConnection();
+                    
+                    // Re-initialize after a short delay
+                    setTimeout(() => {
+                        if (isRecording) {
+                            initializeVoiceRecognition();
+                        }
+                    }, 1000);
+                } else if (voiceReconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+                    alert('Voice recognition encountered too many errors. Please try again later.');
+                    stopVoiceRecording();
+                }
+            };
+            
+            ws.onclose = function() {
+                console.log('WebSocket closed');
+            };
+            
+            // Process and send audio data
+            audioProcessor.onaudioprocess = function(e) {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    // Get audio data from the input channel
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    
+                    // Convert Float32Array to Int16Array for PCM
+                    const pcmData = new Int16Array(inputData.length);
+                    for (let i = 0; i < inputData.length; i++) {
+                        // Convert float audio data (-1.0 to 1.0) to int16 (-32768 to 32767)
+                        pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+                    }
+                    
+                    // Send the PCM data to the WebSocket
+                    ws.send(pcmData.buffer);
+                }
+            };
+        } catch (error) {
+            console.error('Error initializing voice recognition:', error);
+            
+            if (isRecording) {
+                stopVoiceRecording();
+                alert('Failed to initialize voice recognition. Please try again.');
+            }
+        }
+    }
+    
+    // Clean up WebSocket and audio processing resources
+    function cleanupVoiceConnection() {
+        if (ws) {
+            try {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            } catch (e) {
+                console.error('Error closing WebSocket:', e);
+            }
+            ws = null;
+        }
+        
         if (audioProcessor) {
-            audioProcessor.disconnect();
+            try {
+                audioProcessor.disconnect();
+            } catch (e) {
+                console.error('Error disconnecting audio processor:', e);
+            }
             audioProcessor = null;
         }
         
-        // Close audio context
         if (audioContext) {
-            audioContext.close().then(() => {
-                console.log('Audio context closed');
-            });
+            try {
+                audioContext.close();
+            } catch (e) {
+                console.error('Error closing audio context:', e);
+            }
             audioContext = null;
         }
+    }
+    
+    // Function to stop voice recording and clean up resources
+    function stopVoiceRecording() {
+        // Send end frame if WebSocket is open
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            try {
+                const endData = { "type": "END" };
+                ws.send(JSON.stringify(endData));
+                
+                // Update the prior text to include whatever is currently in the input box
+                priorInputText = messageInput.value;
+                currentPartialText = '';
+            } catch (e) {
+                console.error('Error sending END message:', e);
+            }
+        }
+        
+        // Clean up all resources
+        cleanupVoiceConnection();
         
         // Stop all audio tracks
         if (audioStream) {
-            audioStream.getTracks().forEach(track => track.stop());
+            try {
+                audioStream.getTracks().forEach(track => track.stop());
+            } catch (e) {
+                console.error('Error stopping audio tracks:', e);
+            }
             audioStream = null;
         }
         
-        // Send end frame and close WebSocket
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            const endData = { "type": "END" };
-            ws.send(JSON.stringify(endData));
-            
-            // Update the prior text to include whatever is currently in the input box
-            priorInputText = messageInput.value;
-            currentPartialText = '';
-            
-            setTimeout(() => {
-                if (ws) ws.close();
-                ws = null;
-            }, 1000); // Give some time for the server to respond with final results
-        }
-        
+        // Reset state
         isRecording = false;
+        voiceReconnectAttempts = 0;
         startVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
         startVoiceBtn.classList.remove('recording');
     }
