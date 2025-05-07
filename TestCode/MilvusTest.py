@@ -1,5 +1,6 @@
 from pymilvus import MilvusClient
 import numpy as np
+import json
 
 client = MilvusClient("./milvus_demo.db")
 client.create_collection(
