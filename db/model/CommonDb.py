@@ -1,6 +1,7 @@
 from db.model.BaseModel import *
 import datetime
 import json
+import json
 
 class CommonDb(BaseModel):
     def __init__(self,tablename,dbname=""):
