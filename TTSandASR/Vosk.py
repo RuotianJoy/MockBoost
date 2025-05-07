@@ -5,7 +5,7 @@ import vosk
 import json
 import sys
 import logging
-
+import json
 # 配置日志记录
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
